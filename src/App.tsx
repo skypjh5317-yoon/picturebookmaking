@@ -7,6 +7,7 @@ import { BookOpen, CheckCircle2, ChevronLeft, ChevronRight, FileImage, FileText,
 import EbookViewer from './components/EbookViewer'
 import SharedBookPage from './pages/SharedBookPage'
 import AdminPage from './pages/AdminPage'
+import { MAX_PAGES, MAX_PAGES_ERROR, validateImageFile } from './utils/fileValidation'
 
 type Page = { id: string; file: File; previewUrl: string; fileName: string }
 type BookInfo = { title: string; author: string; grade: string; className: string; school: string; year: string }
@@ -48,19 +49,22 @@ function BookInfoForm({ book, onChange, onNext, onHome }: { book: BookInfo; onCh
   const [showError, setShowError] = useState(false)
   const handleNext = () => { if (!book.title.trim()) { setShowError(true); return }; onNext() }
   return <section className="form-card"><div className="section-kicker">STEP 01 / BOOK INFO</div><h2>먼저 그림책 정보를 알려주세요.</h2><p className="section-description">책의 표지에 들어갈 내용을 적어 주세요.</p>
-    <div className="form-grid"><label className="wide-field">책 제목<input autoFocus value={book.title} onChange={(event) => { onChange('title', event.target.value); setShowError(false) }} placeholder="예: 우리들의 숲 이야기" aria-invalid={showError} />{showError && <span className="field-error">책 제목을 입력해주세요.</span>}</label><label className="wide-field">작가<input value={book.author} onChange={(event) => onChange('author', event.target.value)} placeholder="예: 동강초등학교 2학년" /></label><label>학년<select value={book.grade} onChange={(event) => onChange('grade', event.target.value)}><option value="">학년 선택</option>{[1, 2, 3, 4, 5, 6].map((grade) => <option key={grade}>{grade}학년</option>)}</select></label><label>반<input value={book.className} onChange={(event) => onChange('className', event.target.value)} placeholder="예: 2반" /></label><label className="wide-field">학교<input value={book.school} onChange={(event) => onChange('school', event.target.value)} /></label><label>제작 연도<input value={book.year} onChange={(event) => onChange('year', event.target.value)} /></label></div>
+    <div className="form-grid"><label className="wide-field">책 제목<input autoFocus value={book.title} onChange={(event) => { onChange('title', event.target.value); setShowError(false) }} placeholder="예: 우리들의 숲 이야기" aria-invalid={showError} />{showError && <span className="field-error">책 제목을 입력해주세요.</span>}</label><label className="wide-field">작가<input value={book.author} onChange={(event) => onChange('author', event.target.value)} placeholder="예: 책벌레 민준" /><span className="field-hint">작가명은 이름 대신 별명이나 필명을 사용해 주세요.</span></label><label>학년<select value={book.grade} onChange={(event) => onChange('grade', event.target.value)}><option value="">학년 선택</option>{[1, 2, 3, 4, 5, 6].map((grade) => <option key={grade}>{grade}학년</option>)}</select></label><label>반<input value={book.className} onChange={(event) => onChange('className', event.target.value)} placeholder="예: 2반" /></label><label className="wide-field">학교<input value={book.school} onChange={(event) => onChange('school', event.target.value)} /></label><label>제작 연도<input value={book.year} onChange={(event) => onChange('year', event.target.value)} /></label></div>
     <div className="navigation-buttons"><button className="secondary-button" onClick={onHome}><ChevronLeft size={20} /> 처음으로</button><button className="primary-button" onClick={handleNext}>다음 단계로 <ChevronRight size={20} /></button></div>
   </section>
 }
 
-function PageUploader({ pages, onAdd, onDelete, onReorder, onPreview, onBack, onNext }: { pages: Page[]; onAdd: (files: FileList | File[]) => void; onDelete: (id: string) => void; onReorder: (event: DragEndEvent) => void; onPreview: (page: Page) => void; onBack: () => void; onNext: () => void }) {
+function PageUploader({ pages, onAdd, onDelete, onReorder, onPreview, onBack, onNext }: { pages: Page[]; onAdd: (files: FileList | File[]) => string | null; onDelete: (id: string) => void; onReorder: (event: DragEndEvent) => void; onPreview: (page: Page) => void; onBack: () => void; onNext: () => void }) {
   const [isDropActive, setIsDropActive] = useState(false)
+  const [uploadError, setUploadError] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => { event.preventDefault(); setIsDropActive(false); onAdd(event.dataTransfer.files) }
-  return <section className="pages-card"><div className="section-kicker">STEP 02 / ADD PAGES</div><div className="pages-heading"><div><h2>그림책 페이지를 추가해주세요.</h2><p className="section-description">학생들이 만든 JPG, PNG 이미지를 여러 장 선택할 수 있어요.</p></div><button className="secondary-button" onClick={() => fileInputRef.current?.click()}><ImagePlus size={19} /> 파일 선택</button></div>
-    <input ref={fileInputRef} className="visually-hidden" type="file" accept="image/jpeg,image/png" multiple onChange={(event) => { if (event.target.files) onAdd(event.target.files); event.target.value = '' }} />
-    <div className={`upload-zone ${isDropActive ? 'is-active' : ''}`} onClick={() => fileInputRef.current?.click()} onDragOver={(event) => { event.preventDefault(); setIsDropActive(true) }} onDragLeave={() => setIsDropActive(false)} onDrop={handleDrop} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') fileInputRef.current?.click() }}><Upload size={34} /><strong>그림책 페이지를 여기에 끌어다 놓으세요</strong><span>또는 <b>파일 선택</b> · JPG / JPEG / PNG</span><small>여러 장을 한 번에 선택할 수 있어요.</small></div>
+  const handleAdd = (files: FileList | File[]) => { setUploadError(onAdd(files) ?? '') }
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => { event.preventDefault(); setIsDropActive(false); handleAdd(event.dataTransfer.files) }
+  return <section className="pages-card"><div className="section-kicker">STEP 02 / ADD PAGES</div><div className="pages-heading"><div><h2>그림책 페이지를 추가해주세요.</h2><p className="section-description">학생들이 만든 JPG, PNG, WEBP 이미지를 여러 장 선택할 수 있어요.</p></div><button className="secondary-button" onClick={() => fileInputRef.current?.click()}><ImagePlus size={19} /> 파일 선택</button></div>
+    <input ref={fileInputRef} className="visually-hidden" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(event) => { if (event.target.files) handleAdd(event.target.files); event.target.value = '' }} />
+    <div className={`upload-zone ${isDropActive ? 'is-active' : ''}`} onClick={() => fileInputRef.current?.click()} onDragOver={(event) => { event.preventDefault(); setIsDropActive(true) }} onDragLeave={() => setIsDropActive(false)} onDrop={handleDrop} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') fileInputRef.current?.click() }}><Upload size={34} /><strong>그림책 페이지를 여기에 끌어다 놓으세요</strong><span>또는 <b>파일 선택</b> · JPG / JPEG / PNG / WEBP</span><small>여러 장을 한 번에 선택할 수 있어요. (최대 {MAX_PAGES}페이지, 파일당 10MB)</small></div>
+    {uploadError && <p className="upload-error" role="alert">{uploadError}</p>}
     {pages.length > 0 ? <DndContext sensors={sensors} onDragEnd={onReorder}><SortableContext items={pages.map((page) => page.id)} strategy={rectSortingStrategy}><div className="pages-grid">{pages.map((page, index) => <SortablePage key={page.id} page={page} index={index} onDelete={() => onDelete(page.id)} onPreview={() => onPreview(page)} />)}</div></SortableContext></DndContext> : <div className="empty-pages"><FileImage size={31} /><p>아직 추가한 페이지가 없어요.</p><span>아이들의 그림을 한 장씩 올려 보세요.</span></div>}
     <div className="navigation-buttons"><button className="secondary-button" onClick={onBack}><ChevronLeft size={20} /> 이전 단계</button><button className="primary-button" disabled={pages.length === 0} onClick={onNext}>다음 단계로 <ChevronRight size={20} /></button></div>
   </section>
@@ -147,7 +151,7 @@ function PdfMaker({ book, pages, onBack, onEbook }: { book: BookInfo; pages: Pag
           console.info('PDF 원본 비율 검증', { imageWidth: image.naturalWidth, imageHeight: image.naturalHeight, aspectRatio: imageRatio, pageWidth, pageHeight, pageAspectRatio })
         }
         if (isOriginalPage) {
-          const format = page.file.type === 'image/png' ? 'PNG' : 'JPEG'
+          const format = page.file.type === 'image/png' ? 'PNG' : page.file.type === 'image/webp' ? 'WEBP' : 'JPEG'
           pdf.addImage(image, format, 0, 0, pageWidth, pageHeight)
           continue
         }
@@ -158,7 +162,7 @@ function PdfMaker({ book, pages, onBack, onEbook }: { book: BookInfo; pages: Pag
         const imageHeight = scale
         const x = (pageWidth - imageWidth) / 2
         const y = (pageHeight - imageHeight) / 2
-        const format = page.file.type === 'image/png' ? 'PNG' : 'JPEG'
+        const format = page.file.type === 'image/png' ? 'PNG' : page.file.type === 'image/webp' ? 'WEBP' : 'JPEG'
         pdf.addImage(image, format, x, y, imageWidth, imageHeight)
       }
       pdf?.save(safePdfFilename(book.title))
@@ -191,7 +195,21 @@ function App() {
   useEffect(() => { pagesRef.current = pages }, [pages])
   useEffect(() => () => pagesRef.current.forEach((page) => URL.revokeObjectURL(page.previewUrl)), [])
   const updateBook = (field: keyof BookInfo, value: string) => setBook((current) => ({ ...current, [field]: value }))
-  const addFiles = (files: FileList | File[]) => { const validFiles = Array.from(files).filter((file) => ['image/jpeg', 'image/png'].includes(file.type)); setPages((current) => [...current, ...validFiles.map((file, index) => ({ id: `${file.name}-${file.lastModified}-${Date.now()}-${index}`, file, previewUrl: URL.createObjectURL(file), fileName: file.name }))]) }
+  const addFiles = (files: FileList | File[]): string | null => {
+    if (pages.length >= MAX_PAGES) return MAX_PAGES_ERROR
+    const acceptedFiles: File[] = []
+    let errorMessage = ''
+    for (const file of Array.from(files)) {
+      const validationError = validateImageFile(file)
+      if (validationError) { errorMessage ||= validationError; continue }
+      acceptedFiles.push(file)
+    }
+    const availableSlots = MAX_PAGES - pages.length
+    if (acceptedFiles.length > availableSlots) errorMessage = MAX_PAGES_ERROR
+    const filesToAdd = acceptedFiles.slice(0, Math.max(0, availableSlots))
+    setPages((current) => [...current, ...filesToAdd.map((file, index) => ({ id: `${file.name}-${file.lastModified}-${Date.now()}-${index}`, file, previewUrl: URL.createObjectURL(file), fileName: file.name }))])
+    return errorMessage || null
+  }
   const removePage = (pageId: string) => setPages((current) => { const page = current.find((item) => item.id === pageId); if (page) URL.revokeObjectURL(page.previewUrl); return current.filter((item) => item.id !== pageId) })
   const handleReorder = ({ active, over }: DragEndEvent) => { if (!over || active.id === over.id) return; setPages((current) => arrayMove(current, current.findIndex((page) => page.id === active.id), current.findIndex((page) => page.id === over.id))) }
   const startCreating = () => { setIsCreating(true); setStep(1) }

@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { validateImageFile } from '../utils/fileValidation'
 
 export type SaveBookInfo = { title: string; author: string; grade: string; className: string; school: string; year: string }
 export type SaveBookPage = { file: File; fileName: string }
@@ -12,6 +13,9 @@ function requireClient() {
 
 export async function saveBook(book: SaveBookInfo, pages: SaveBookPage[], onProgress?: (current: number, total: number) => void) {
   const client = requireClient()
+  for (const page of pages) {
+    if (validateImageFile(page.file)) throw new Error('PAGE_UPLOAD_FAILED')
+  }
   const slug = crypto.randomUUID()
   const { data: savedBook, error: bookError } = await client.from('books').insert({ slug, title: book.title, author: book.author, grade: book.grade, class_name: book.className, school: book.school, year: Number(book.year) || new Date().getFullYear() }).select('id, slug').single()
   if (bookError || !savedBook) { console.error('Book insert failed', bookError); throw new Error('BOOK_SAVE_FAILED') }
@@ -19,7 +23,7 @@ export async function saveBook(book: SaveBookInfo, pages: SaveBookPage[], onProg
   const pageRows: Array<{ book_id: string; page_number: number; image_path: string; image_url: string; original_filename: string }> = []
   try {
     for (const [index, page] of pages.entries()) {
-      const extension = page.file.type === 'image/png' ? 'png' : 'jpg'
+      const extension = page.file.type === 'image/png' ? 'png' : page.file.type === 'image/webp' ? 'webp' : 'jpg'
       const path = `books/${savedBook.id}/${index + 1}-${crypto.randomUUID()}.${extension}`
       const { error: uploadError } = await client.storage.from('book-pages').upload(path, page.file, { contentType: page.file.type, upsert: false })
       if (uploadError) { console.error('Page upload failed', uploadError); throw new Error('PAGE_UPLOAD_FAILED') }
