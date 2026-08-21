@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+#root {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  font-family: "Gowun Dodum", "Noto Sans KR", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
