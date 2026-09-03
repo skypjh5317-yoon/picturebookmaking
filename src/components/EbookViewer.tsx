@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ArrowLeft, Maximize, Minimize, X } from 'lucide-react'
 import SaveBookButton from './SaveBookButton'
 
@@ -23,39 +23,50 @@ export default function EbookViewer({ book, pages, onBack, readOnly = false }: {
   const [isTurning, setIsTurning] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [bookAspectRatio, setBookAspectRatio] = useState<number | null>(null)
   const [bookSize, setBookSize] = useState<{ width: number; height: number } | null>(null)
 
-  const recalculateBookSize = (fullscreenActive = isFullscreen) => {
+  const recalculateBookSize = useCallback(() => {
     const stage = stageRef.current
-    if (!stage) return
-    const availableWidth = Math.max(0, stage.clientWidth - (fullscreenActive ? 24 : 56))
-    const availableHeight = Math.max(0, stage.clientHeight - (fullscreenActive ? 20 : 40))
-    const bookAspectRatio = 4 / 3
-    const width = Math.min(availableWidth, availableHeight * bookAspectRatio)
-    const height = width / bookAspectRatio
+    const aspectRatio = bookAspectRatio
+    if (!stage || aspectRatio === null || !Number.isFinite(aspectRatio) || aspectRatio <= 0) return
+    const styles = getComputedStyle(stage)
+    const horizontalPadding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight)
+    const verticalPadding = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom)
+    const availableWidth = Math.max(0, stage.clientWidth - horizontalPadding)
+    const availableHeight = Math.max(0, stage.clientHeight - verticalPadding)
+    if (availableWidth <= 0 || availableHeight <= 0) return
+    const width = Math.min(availableWidth, availableHeight * aspectRatio)
+    const height = width / aspectRatio
+    if (width <= 0 || height <= 0) return
     setBookSize((current) => current && Math.abs(current.width - width) < 1 && Math.abs(current.height - height) < 1 ? current : { width, height })
-  }
+  }, [bookAspectRatio])
 
   useEffect(() => {
-    const viewer = viewerRef.current
-    if (!viewer) return
-    const observer = new ResizeObserver(() => recalculateBookSize(Boolean(document.fullscreenElement)))
-    observer.observe(viewer)
-    const handleResize = () => recalculateBookSize(Boolean(document.fullscreenElement))
+    const stage = stageRef.current
+    if (!stage) return
+    const observer = new ResizeObserver(recalculateBookSize)
+    observer.observe(stage)
+    const handleResize = recalculateBookSize
     window.addEventListener('resize', handleResize)
-    recalculateBookSize(Boolean(document.fullscreenElement))
+    recalculateBookSize()
     return () => { observer.disconnect(); window.removeEventListener('resize', handleResize) }
-  }, [])
+  }, [recalculateBookSize])
 
   useEffect(() => {
     let cancelled = false
     setIsLoading(true)
-    Promise.all(pages.map((page) => new Promise<void>((resolve) => {
+    setBookAspectRatio(null)
+    Promise.all(pages.map((page) => new Promise<number | null>((resolve) => {
       const image = new Image()
-      image.onload = () => resolve()
-      image.onerror = () => resolve()
+      image.onload = () => resolve(image.naturalWidth > 0 && image.naturalHeight > 0 ? image.naturalWidth / image.naturalHeight : null)
+      image.onerror = () => resolve(null)
       image.src = page.previewUrl
-    }))).then(() => { if (!cancelled) setIsLoading(false) })
+    }))).then((ratios) => {
+      if (cancelled) return
+      setBookAspectRatio(ratios.find((ratio): ratio is number => ratio !== null) ?? null)
+      setIsLoading(false)
+    })
     return () => { cancelled = true }
   }, [pages])
 
@@ -97,11 +108,11 @@ export default function EbookViewer({ book, pages, onBack, readOnly = false }: {
     const handleFullscreen = () => {
       const fullscreenActive = Boolean(document.fullscreenElement)
       setIsFullscreen(fullscreenActive)
-      requestAnimationFrame(() => recalculateBookSize(fullscreenActive))
+      requestAnimationFrame(recalculateBookSize)
     }
     document.addEventListener('fullscreenchange', handleFullscreen)
     return () => document.removeEventListener('fullscreenchange', handleFullscreen)
-  }, [])
+  }, [recalculateBookSize])
 
   const handleTouchStart = (event: React.TouchEvent) => { touchStartX.current = event.changedTouches[0]?.clientX ?? null }
   const handleTouchEnd = (event: React.TouchEvent) => {
@@ -144,7 +155,7 @@ export default function EbookViewer({ book, pages, onBack, readOnly = false }: {
   return <main ref={viewerRef} className={`ebook-viewer ${isFullscreen ? 'is-fullscreen' : ''}`}>
     <header className="ebook-header">{!readOnly && onBack && <button className="ebook-back" onClick={onBack}><ArrowLeft size={20} /> 제작 화면으로</button>}<div className="ebook-heading"><span>📚 나만의 그림책</span><strong>{book.title || '제목 없는 그림책'}</strong><small>{book.author || '작가 미입력'}</small></div><button className="ebook-fullscreen" onClick={toggleFullscreen} aria-label="전체 화면" title="전체 화면">{isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}<span>{isFullscreen ? '전체화면 종료' : '전체화면'}</span></button></header>
     <section ref={stageRef} className="ebook-stage" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onClick={handleStageClick} aria-label="웹 전자책">
-      {isLoading ? <div className="ebook-loading">📖 그림책을 펼치는 중...</div> : currentPage && <div className="ebook-book is-single" style={isFullscreen && bookSize ? { width: bookSize.width, height: bookSize.height } : undefined}>
+      {isLoading ? <div className="ebook-loading">📖 그림책을 펼치는 중...</div> : currentPage && <div className="ebook-book is-single" style={bookSize ? { width: bookSize.width, height: bookSize.height } : { visibility: 'hidden' }}>
         <div className="ebook-under-page">{revealedPage && <EbookPageImage page={revealedPage} />}</div>
         <div className={`ebook-turning-page ${isTurning ? `is-turning-${turnDirection}` : ''}`}><EbookPageImage page={currentPage} /></div>
       </div>}
