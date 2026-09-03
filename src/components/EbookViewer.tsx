@@ -23,24 +23,30 @@ export default function EbookViewer({ book, pages, onBack, readOnly = false }: {
   const [isTurning, setIsTurning] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [bookAspectRatio, setBookAspectRatio] = useState<number | null>(null)
+  const [pageAspectRatios, setPageAspectRatios] = useState<(number | null)[]>([])
   const [bookSize, setBookSize] = useState<{ width: number; height: number } | null>(null)
+
+  const revealedIndex = turnDirection === 'next' ? currentIndex + 1 : currentIndex - 1
+  const visibleIndexes = isTurning ? [currentIndex, revealedIndex] : [currentIndex]
+  const frameAspectRatio = visibleIndexes
+    .map((index) => pageAspectRatios[index])
+    .filter((ratio): ratio is number => ratio !== null && Number.isFinite(ratio) && ratio > 0)
+    .reduce((smallestRatio, ratio) => Math.min(smallestRatio, ratio), Number.POSITIVE_INFINITY)
 
   const recalculateBookSize = useCallback(() => {
     const stage = stageRef.current
-    const aspectRatio = bookAspectRatio
-    if (!stage || aspectRatio === null || !Number.isFinite(aspectRatio) || aspectRatio <= 0) return
+    if (!stage || !Number.isFinite(frameAspectRatio) || frameAspectRatio <= 0) return
     const styles = getComputedStyle(stage)
     const horizontalPadding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight)
     const verticalPadding = parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom)
     const availableWidth = Math.max(0, stage.clientWidth - horizontalPadding)
     const availableHeight = Math.max(0, stage.clientHeight - verticalPadding)
     if (availableWidth <= 0 || availableHeight <= 0) return
-    const width = Math.min(availableWidth, availableHeight * aspectRatio)
-    const height = width / aspectRatio
+    const width = Math.min(availableWidth, availableHeight * frameAspectRatio)
+    const height = width / frameAspectRatio
     if (width <= 0 || height <= 0) return
     setBookSize((current) => current && Math.abs(current.width - width) < 1 && Math.abs(current.height - height) < 1 ? current : { width, height })
-  }, [bookAspectRatio])
+  }, [frameAspectRatio])
 
   useEffect(() => {
     const stage = stageRef.current
@@ -56,7 +62,7 @@ export default function EbookViewer({ book, pages, onBack, readOnly = false }: {
   useEffect(() => {
     let cancelled = false
     setIsLoading(true)
-    setBookAspectRatio(null)
+    setPageAspectRatios([])
     Promise.all(pages.map((page) => new Promise<number | null>((resolve) => {
       const image = new Image()
       image.onload = () => resolve(image.naturalWidth > 0 && image.naturalHeight > 0 ? image.naturalWidth / image.naturalHeight : null)
@@ -64,7 +70,7 @@ export default function EbookViewer({ book, pages, onBack, readOnly = false }: {
       image.src = page.previewUrl
     }))).then((ratios) => {
       if (cancelled) return
-      setBookAspectRatio(ratios.find((ratio): ratio is number => ratio !== null) ?? null)
+      setPageAspectRatios(ratios)
       setIsLoading(false)
     })
     return () => { cancelled = true }
@@ -149,7 +155,7 @@ export default function EbookViewer({ book, pages, onBack, readOnly = false }: {
   }
 
   const currentPage = pages[currentIndex]
-  const revealedPage = isTurning ? pages[turnDirection === 'next' ? currentIndex + 1 : currentIndex - 1] : currentPage
+  const revealedPage = isTurning && revealedIndex >= 0 && revealedIndex < pages.length ? pages[revealedIndex] : currentPage
   const pageLabel = `${currentIndex + 1} / ${pages.length}`
 
   return <main ref={viewerRef} className={`ebook-viewer ${isFullscreen ? 'is-fullscreen' : ''}`}>
