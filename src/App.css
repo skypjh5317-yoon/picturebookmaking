@@ -1757,3 +1757,25 @@ button:disabled {
 .shared-book-state a {
   text-decoration: none;
 }
+
+.ebook-copyright {
+  margin-top: 10px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.ebook-copyright p {
+  margin: 0;
+}
+.ebook-copyright p:first-child {
+  font-weight: bold;
+}
+.ebook-viewer.is-fullscreen .ebook-copyright p:last-child {
+  display: none;
+}
+@media (max-width: 768px) {
+  .ebook-copyright {
+    font-size: 11px;
+  }
+}
