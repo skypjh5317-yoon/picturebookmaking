@@ -3,7 +3,7 @@ import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } f
 import { arrayMove, rectSortingStrategy, SortableContext, useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { jsPDF } from 'jspdf'
-import { BookOpen, CheckCircle2, ChevronLeft, ChevronRight, FileImage, FileText, GripVertical, ImagePlus, Maximize2, Pencil, Star, Trash2, Upload, X } from 'lucide-react'
+import { BookOpen, CheckCircle2, ChevronLeft, ChevronRight, FileImage, FileText, GripVertical, ImagePlus, Maximize2, Trash2, Upload, X } from 'lucide-react'
 import EbookViewer from './components/EbookViewer'
 import SharedBookPage from './pages/SharedBookPage'
 import AdminPage from './pages/AdminPage'
@@ -13,6 +13,14 @@ type Page = { id: string; file: File; previewUrl: string; fileName: string }
 type BookInfo = { title: string; author: string; grade: string; className: string; school: string; year: string }
 type Step = 1 | 2 | 3 | 4 | 5 | 6 | 7
 type PdfPageSize = 'original' | 'a4-portrait' | 'a4-landscape'
+
+const welcomeSpines = [
+  { label: '우리들의 숲', color: '#157F71', ink: '#ffffff', height: 230, width: 62 },
+  { label: '꿈', color: '#F0B429', ink: '#1E2A44', height: 190, width: 52 },
+  { label: '나의 이야기', color: '#C94A2B', ink: '#ffffff', height: 250, width: 70 },
+  { label: '모험', color: '#6A4C96', ink: '#ffffff', height: 205, width: 56 },
+  { label: '그림책', color: '#2F6FB5', ink: '#ffffff', height: 240, width: 64 },
+]
 
 const initialBook: BookInfo = { title: '', author: '', grade: '', className: '', school: '동강초등학교', year: String(new Date().getFullYear()) }
 const steps = [
@@ -27,8 +35,8 @@ const steps = [
 
 function Header({ onHome, editing }: { onHome?: () => void; editing?: boolean }) {
   return <header className="site-header">
-    {editing ? <button className="back-button" onClick={onHome}><ChevronLeft size={21} /> 처음으로</button> : <div className="brand"><span className="brand-mark"><BookOpen size={25} /></span><div><span className="eyebrow">MY STORY, MY BOOK</span><h1>나만의 그림책 제작</h1></div></div>}
-    {editing ? <div className="brand brand--compact"><span className="brand-mark"><BookOpen size={21} /></span><h1>나만의 그림책 제작</h1></div> : <span className="header-note">그림책 만들기</span>}
+    {editing ? <button className="back-button" onClick={onHome}><ChevronLeft size={21} /> 처음으로</button> : <div className="brand"><span className="brand-mark"><BookOpen size={25} /></span><div><span className="eyebrow">동강초 그림책 도서관</span><h1>나만의 그림책 만들기</h1></div></div>}
+    {editing ? <div className="brand brand--compact"><span className="brand-mark"><BookOpen size={21} /></span><h1>나만의 그림책 만들기</h1></div> : <a className="header-note" href="https://donggang-picturebook-library.vercel.app">그림책 도서관 가기</a>}
   </header>
 }
 
@@ -48,7 +56,7 @@ function SortablePage({ page, index, onDelete, onPreview }: { page: Page; index:
 function BookInfoForm({ book, onChange, onNext, onHome }: { book: BookInfo; onChange: (field: keyof BookInfo, value: string) => void; onNext: () => void; onHome: () => void }) {
   const [showError, setShowError] = useState(false)
   const handleNext = () => { if (!book.title.trim()) { setShowError(true); return }; onNext() }
-  return <section className="form-card"><div className="section-kicker">STEP 01 / BOOK INFO</div><h2>먼저 그림책 정보를 알려주세요.</h2><p className="section-description">책의 표지에 들어갈 내용을 적어 주세요.</p>
+  return <section className="form-card"><div className="section-kicker">1단계 · 책 정보</div><h2>먼저 그림책 정보를 알려주세요.</h2><p className="section-description">책의 표지에 들어갈 내용을 적어 주세요.</p>
     <div className="form-grid"><label className="wide-field">책 제목<input autoFocus value={book.title} onChange={(event) => { onChange('title', event.target.value); setShowError(false) }} placeholder="예: 우리들의 숲 이야기" aria-invalid={showError} />{showError && <span className="field-error">책 제목을 입력해주세요.</span>}</label><label className="wide-field">작가<input value={book.author} onChange={(event) => onChange('author', event.target.value)} placeholder="예: 책벌레 민준" /><span className="field-hint">작가명은 이름 대신 별명이나 필명을 사용해 주세요.</span></label><label>학년<select value={book.grade} onChange={(event) => onChange('grade', event.target.value)}><option value="">학년 선택</option>{[1, 2, 3, 4, 5, 6].map((grade) => <option key={grade}>{grade}학년</option>)}</select></label><label>반<input value={book.className} onChange={(event) => onChange('className', event.target.value)} placeholder="예: 2반" /></label><label className="wide-field">학교<input value={book.school} onChange={(event) => onChange('school', event.target.value)} /></label><label>제작 연도<input value={book.year} onChange={(event) => onChange('year', event.target.value)} /></label></div>
     <div className="navigation-buttons"><button className="secondary-button" onClick={onHome}><ChevronLeft size={20} /> 처음으로</button><button className="primary-button" onClick={handleNext}>다음 단계로 <ChevronRight size={20} /></button></div>
   </section>
@@ -61,7 +69,7 @@ function PageUploader({ pages, onAdd, onDelete, onReorder, onPreview, onBack, on
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
   const handleAdd = (files: FileList | File[]) => { setUploadError(onAdd(files) ?? '') }
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => { event.preventDefault(); setIsDropActive(false); handleAdd(event.dataTransfer.files) }
-  return <section className="pages-card"><div className="section-kicker">STEP 02 / ADD PAGES</div><div className="pages-heading"><div><h2>그림책 페이지를 추가해주세요.</h2><p className="section-description">학생들이 만든 JPG, PNG, WEBP 이미지를 여러 장 선택할 수 있어요.</p></div><button className="secondary-button" onClick={() => fileInputRef.current?.click()}><ImagePlus size={19} /> 파일 선택</button></div>
+  return <section className="pages-card"><div className="section-kicker">2단계 · 페이지 추가</div><div className="pages-heading"><div><h2>그림책 페이지를 추가해주세요.</h2><p className="section-description">학생들이 만든 JPG, PNG, WEBP 이미지를 여러 장 선택할 수 있어요.</p></div><button className="secondary-button" onClick={() => fileInputRef.current?.click()}><ImagePlus size={19} /> 파일 선택</button></div>
     <input ref={fileInputRef} className="visually-hidden" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(event) => { if (event.target.files) handleAdd(event.target.files); event.target.value = '' }} />
     <div className={`upload-zone ${isDropActive ? 'is-active' : ''}`} onClick={() => fileInputRef.current?.click()} onDragOver={(event) => { event.preventDefault(); setIsDropActive(true) }} onDragLeave={() => setIsDropActive(false)} onDrop={handleDrop} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') fileInputRef.current?.click() }}><Upload size={34} /><strong>그림책 페이지를 여기에 끌어다 놓으세요</strong><span>또는 <b>파일 선택</b> · JPG / JPEG / PNG / WEBP</span><small>여러 장을 한 번에 선택할 수 있어요. (최대 {MAX_PAGES}페이지, 파일당 10MB)</small></div>
     {uploadError && <p className="upload-error" role="alert">{uploadError}</p>}
@@ -72,7 +80,7 @@ function PageUploader({ pages, onAdd, onDelete, onReorder, onPreview, onBack, on
 
 function PageOrganizer({ pages, onDelete, onReorder, onPreview, onBack, onNext }: { pages: Page[]; onDelete: (id: string) => void; onReorder: (event: DragEndEvent) => void; onPreview: (page: Page) => void; onBack: () => void; onNext: () => void }) {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
-  return <section className="pages-card"><div className="section-kicker">STEP 03 / ORGANIZE PAGES</div><div className="pages-heading"><div><h2>페이지 순서를 정리해주세요.</h2><p className="section-description">카드를 드래그해서 그림책 페이지 순서를 바꿔보세요.</p></div><span className="page-count">{pages.length}장</span></div>
+  return <section className="pages-card"><div className="section-kicker">3단계 · 페이지 정리</div><div className="pages-heading"><div><h2>페이지 순서를 정리해주세요.</h2><p className="section-description">카드를 드래그해서 그림책 페이지 순서를 바꿔보세요.</p></div><span className="page-count">{pages.length}장</span></div>
     <DndContext sensors={sensors} onDragEnd={onReorder}><SortableContext items={pages.map((page) => page.id)} strategy={rectSortingStrategy}><div className="pages-grid">{pages.map((page, index) => <SortablePage key={page.id} page={page} index={index} onDelete={() => onDelete(page.id)} onPreview={() => onPreview(page)} />)}</div></SortableContext></DndContext>
     <div className="navigation-buttons"><button className="secondary-button" onClick={onBack}><ChevronLeft size={20} /> 이전 단계</button><button className="primary-button" disabled={pages.length === 0} onClick={onNext}>다음 단계로 <ChevronRight size={20} /></button></div>
   </section>
@@ -84,7 +92,7 @@ function PagePreview({ pages, onBack, onPdf }: { pages: Page[]; onBack: () => vo
   const isFirstPage = currentIndex === 0
   const isLastPage = currentIndex === pages.length - 1
 
-  return <section className="preview-card"><div className="section-kicker">STEP 04 / PREVIEW</div><div className="preview-heading"><div><h2>그림책을 미리 살펴보세요.</h2><p className="section-description">페이지 순서대로 한 장씩 확인할 수 있어요.</p></div><strong className="preview-counter">{currentIndex + 1} / {pages.length}</strong></div>
+  return <section className="preview-card"><div className="section-kicker">4단계 · 미리보기</div><div className="preview-heading"><div><h2>그림책을 미리 살펴보세요.</h2><p className="section-description">페이지 순서대로 한 장씩 확인할 수 있어요.</p></div><strong className="preview-counter">{currentIndex + 1} / {pages.length}</strong></div>
     {currentPage && <div className="preview-page"><img src={currentPage.previewUrl} alt={`${currentIndex + 1}페이지 ${currentPage.fileName}`} /></div>}
     <div className="preview-navigation"><button className="secondary-button" disabled={isFirstPage} onClick={() => setCurrentIndex((index) => Math.max(0, index - 1))}><ChevronLeft size={20} /> 이전 페이지</button><button className="primary-button" disabled={isLastPage} onClick={() => setCurrentIndex((index) => Math.min(pages.length - 1, index + 1))}>다음 페이지 <ChevronRight size={20} /></button></div>
     <div className="preview-actions"><button className="preview-back-button" onClick={onBack}>페이지 순서 다시 정리하기</button><button className="primary-button" onClick={onPdf}><FileText size={20} /> PDF 만들기</button></div>
@@ -175,10 +183,10 @@ function PdfMaker({ book, pages, onBack, onEbook }: { book: BookInfo; pages: Pag
     }
   }
 
-  return <section className="pdf-card"><div className="section-kicker">STEP 05 / MAKE PDF</div><div className="pdf-intro"><CheckCircle2 size={42} /><div><h2>🎉 그림책이 완성되었습니다!</h2><p>이제 그림책을 PDF 파일로 저장할 수 있어요.</p></div></div>
+  return <section className="pdf-card"><div className="section-kicker">5단계 · PDF 만들기</div><div className="pdf-intro"><CheckCircle2 size={42} /><div><h2>그림책이 완성되었습니다!</h2><p>이제 그림책을 PDF 파일로 저장할 수 있어요.</p></div></div>
     <div className="book-summary"><strong>{book.title || '제목 없는 그림책'}</strong><span>{book.author || '작가 미입력'}</span><span>총 {pages.length}페이지</span></div>
     <fieldset className="pdf-size-options"><legend>PDF 페이지 크기</legend><label className={pageSize === 'original' ? 'is-selected' : ''}><input type="radio" name="pdf-size" value="original" checked={pageSize === 'original'} onChange={() => setPageSize('original')} /><span>원본 비율</span><small>이미지 비율에 맞춰 만들어요</small></label><label className={pageSize === 'a4-portrait' ? 'is-selected' : ''}><input type="radio" name="pdf-size" value="a4-portrait" checked={pageSize === 'a4-portrait'} onChange={() => setPageSize('a4-portrait')} /><span>A4 세로</span><small>210 × 297 mm</small></label><label className={pageSize === 'a4-landscape' ? 'is-selected' : ''}><input type="radio" name="pdf-size" value="a4-landscape" checked={pageSize === 'a4-landscape'} onChange={() => setPageSize('a4-landscape')} /><span>A4 가로</span><small>297 × 210 mm</small></label></fieldset>
-    {isGenerating && <p className="pdf-status" role="status">PDF를 만들고 있어요...</p>}{isComplete && <p className="pdf-status is-complete" role="status">✅ PDF가 완성되었습니다!</p>}{error && <p className="pdf-status is-error" role="alert">{error}</p>}
+    {isGenerating && <p className="pdf-status" role="status">PDF를 만들고 있어요...</p>}{isComplete && <p className="pdf-status is-complete" role="status">PDF가 완성되었습니다!</p>}{error && <p className="pdf-status is-error" role="alert">{error}</p>}
     <div className="navigation-buttons"><button className="secondary-button" onClick={onBack} disabled={isGenerating}><ChevronLeft size={20} /> 미리보기로 돌아가기</button><button className="primary-button pdf-create-button" onClick={createPdf} disabled={isGenerating}>{isComplete ? <><FileText size={20} /> PDF 다시 만들기</> : <><FileText size={20} /> PDF 만들기</>}{isGenerating && ' · 만드는 중'}</button></div><button className="ebook-entry-button" onClick={onEbook} disabled={isGenerating}>📖 웹 전자책 보기</button>
   </section>
 }
@@ -215,7 +223,7 @@ function App() {
   const startCreating = () => { setIsCreating(true); setStep(1) }
   if (sharedBookSlug) return <SharedBookPage slug={decodeURIComponent(sharedBookSlug)} />
   if (isAdminRoute) return <AdminPage />
-  if (!isCreating) return <main className="app-shell"><Header /><section className="welcome"><div className="welcome-copy"><span className="eyebrow">MY STORY, MY BOOK</span><h2>우리의 이야기가<br /><em>한 권의 책</em>이 됩니다.</h2><p>학생들이 만든 그림과 이야기를 모아<br />쉽고 재미있게 그림책을 만들어보세요.</p><div className="welcome-actions"><button className="primary-button" onClick={startCreating}><BookOpen size={21} /> 새 그림책 만들기</button><button className="text-button" disabled><BookOpen size={19} /> 만든 책 보기 <span>준비 중</span></button></div></div><div className="welcome-art" aria-hidden="true"><span className="decor decor-star"><Star size={22} fill="currentColor" /></span><span className="decor decor-pencil"><Pencil size={28} /></span><span className="decor decor-leaf">⌁</span><div className="sun"></div><div className="book-shape"><BookOpen size={78} strokeWidth={1.3} /></div><span className="art-label">DRAW<br />YOUR<br />STORY</span></div></section></main>
+  if (!isCreating) return <main className="app-shell"><Header /><section className="welcome"><div className="welcome-copy"><span className="eyebrow">동강초 그림책 도서관</span><h2>우리의 이야기가<br /><em>한 권의 책</em>이 됩니다.</h2><p>학생들이 만든 그림과 이야기를 모아<br />쉽고 재미있게 그림책을 만들어보세요.</p><div className="welcome-actions"><button className="primary-button" onClick={startCreating}><BookOpen size={21} /> 새 그림책 만들기</button><a className="text-button" href="https://donggang-picturebook-library.vercel.app"><BookOpen size={19} /> 그림책 도서관 가기</a></div></div><div className="welcome-shelf" aria-hidden="true"><div className="welcome-shelf__books">{welcomeSpines.map((spine) => <span key={spine.label} className="welcome-spine" style={{ background: spine.color, color: spine.ink, height: spine.height, width: spine.width }}><span>{spine.label}</span></span>)}</div><div className="welcome-shelf__board" /></div></section></main>
   return <main className="app-shell">{step === 6 ? <EbookViewer book={book} pages={pages} onBack={() => setStep(5)} /> : <><Header editing onHome={() => setIsCreating(false)} /><div className="editor-layout"><StepIndicator current={step} />{step === 1 ? <BookInfoForm book={book} onChange={updateBook} onNext={() => setStep(2)} onHome={() => setIsCreating(false)} /> : step === 2 ? <PageUploader pages={pages} onAdd={addFiles} onDelete={removePage} onReorder={handleReorder} onPreview={setPreview} onBack={() => setStep(1)} onNext={() => setStep(3)} /> : step === 3 ? <PageOrganizer pages={pages} onDelete={removePage} onReorder={handleReorder} onPreview={setPreview} onBack={() => setStep(2)} onNext={() => setStep(4)} /> : step === 4 ? <PagePreview pages={pages} onBack={() => setStep(3)} onPdf={() => setStep(5)} /> : <PdfMaker book={book} pages={pages} onBack={() => setStep(4)} onEbook={() => setStep(6)} />}</div>{preview && <div className="preview-modal" role="dialog" aria-modal="true" aria-label="페이지 미리보기" onClick={() => setPreview(null)}><div className="preview-content" onClick={(event) => event.stopPropagation()}><button className="icon-button close-button" onClick={() => setPreview(null)} aria-label="미리보기 닫기"><X size={24} /></button><img src={preview.previewUrl} alt={preview.fileName} /></div></div>}</>}</main>
 }
 

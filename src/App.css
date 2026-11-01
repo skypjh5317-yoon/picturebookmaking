@@ -1,13 +1,24 @@
-@import url("https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gowun+Dodum&display=swap");
+/* 동강초 그림책 도서관과 같은 "책꽂이" 디자인 규칙을 따릅니다 (도서관 저장소 DESIGN.md 참고) */
 
 :root {
-  --ink: #293b3b;
-  --muted: #71807b;
-  --coral: #e76f51;
-  --cream: #fffaf0;
-  --line: #e4d9c8;
-  --mint: #dcefe5;
-  --sky: #dcecf3;
+  --ink: #1e2a44;
+  --ink-soft: #3d4a66;
+  --muted: #4e5b75;
+  --coral: #2b3f6e; /* 주 색(선반색). 예전 변수 이름을 그대로 써서 기존 규칙에 바로 적용 */
+  --shelf: #2b3f6e;
+  --shelf-shadow: #c7d3e3;
+  --wall: #e7eef6;
+  --cream: #ffffff;
+  --line: #d5dfeb;
+  --mint: #e1e9f4;
+  --sky: #e1e9f4;
+  --spine-green: #157f71;
+  --spine-yellow: #f0b429;
+  --spine-orange: #c94a2b;
+  font-family: "Gowun Dodum", sans-serif;
+  color: var(--ink);
+  background: var(--wall);
 }
 * {
   box-sizing: border-box;
@@ -27,9 +38,7 @@ button:disabled {
 .app-shell {
   min-height: 100vh;
   color: var(--ink);
-  background: #f7f1e7;
-  background-image: radial-gradient(#eadfce 1px, transparent 1px);
-  background-size: 20px 20px;
+  background: #e7eef6;
 }
 .site-header {
   position: sticky;
@@ -40,7 +49,7 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(255, 250, 240, 0.94);
+  background: rgba(255, 255, 255, 0.94);
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(8px);
 }
@@ -66,7 +75,7 @@ button:disabled {
 .brand h1 {
   margin: 2px 0 0;
   font:
-    24px "Jua",
+    24px "Do Hyeon",
     sans-serif;
 }
 .eyebrow,
@@ -94,7 +103,7 @@ button:disabled {
 .welcome h2 {
   margin: 18px 0;
   font:
-    64px/1.16 "Jua",
+    64px/1.16 "Do Hyeon",
     sans-serif;
 }
 .welcome h2 em {
@@ -129,15 +138,15 @@ button:disabled {
 .primary-button {
   color: white;
   background: var(--coral);
-  box-shadow: 0 6px 0 #c9553d;
+  box-shadow: 0 6px 0 #1e2a44;
 }
 .primary-button:hover {
-  background: #d86145;
+  background: #1e2a44;
   transform: translateY(-2px);
 }
 .primary-button:disabled {
-  color: #a9a19a;
-  background: #e8e1d8;
+  color: #8a96ad;
+  background: #dde5ef;
   box-shadow: none;
 }
 .text-button {
@@ -150,8 +159,8 @@ button:disabled {
 }
 .text-button span {
   padding: 4px 8px;
-  color: #b38c60;
-  background: #f5e8c8;
+  color: #8a96ad;
+  background: #fdf0cc;
   border-radius: 20px;
   font-size: 11px;
 }
@@ -159,10 +168,10 @@ button:disabled {
   position: relative;
   height: 430px;
   overflow: hidden;
-  border: 1px solid #dfcfba;
+  border: 1px solid #c7d3e3;
   border-radius: 38% 14% 34% 15%;
-  background: #f0c987;
-  box-shadow: 15px 15px 0 #e4d5c0;
+  background: #f0b429;
+  box-shadow: 15px 15px 0 #d5dfeb;
 }
 .sun {
   position: absolute;
@@ -171,7 +180,7 @@ button:disabled {
   width: 108px;
   height: 108px;
   border-radius: 50%;
-  background: #f7e5a8;
+  background: #fbe3a0;
 }
 .book-shape {
   position: absolute;
@@ -181,26 +190,26 @@ button:disabled {
   place-items: center;
   width: 205px;
   height: 155px;
-  color: #fff9e9;
+  color: #ffffff;
   background: var(--coral);
   border-radius: 10px 28px 28px 10px;
   transform: translateX(-50%) rotate(-8deg);
-  box-shadow: 12px 14px 0 #c85a44;
+  box-shadow: 12px 14px 0 #c94a2b;
 }
 .art-label {
   position: absolute;
   bottom: 28px;
   left: 35px;
-  color: #fff9e9;
+  color: #ffffff;
   font:
-    25px/1.05 "Jua",
+    25px/1.05 "Do Hyeon",
     sans-serif;
   letter-spacing: 0.08em;
 }
 .decor {
   position: absolute;
   z-index: 1;
-  color: #fff8e6;
+  color: #fff8e1;
 }
 .decor-star {
   top: 55px;
@@ -246,13 +255,13 @@ button:disabled {
   padding: 13px 17px;
   border: 1px solid var(--line);
   border-radius: 15px;
-  background: rgba(255, 250, 240, 0.75);
+  background: rgba(255, 255, 255, 0.75);
 }
 .step {
   display: flex;
   align-items: center;
   gap: 7px;
-  color: #a9a096;
+  color: #8a96ad;
   font-size: 13px;
   font-weight: bold;
   white-space: nowrap;
@@ -264,24 +273,24 @@ button:disabled {
   color: var(--coral);
 }
 .step.is-done {
-  color: #5b9a7c;
+  color: #157f71;
 }
 .step-arrow {
-  color: #cfc2b1;
+  color: #c7d3e3;
 }
 .form-card,
 .pages-card {
   padding: 34px;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: rgba(255, 250, 240, 0.94);
-  box-shadow: 0 8px 24px rgba(76, 57, 30, 0.06);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 24px rgba(30, 42, 68, 0.06);
 }
 .form-card h2,
 .pages-heading h2 {
   margin: 9px 0 8px;
   font:
-    32px "Jua",
+    32px "Do Hyeon",
     sans-serif;
 }
 .section-description {
@@ -297,7 +306,7 @@ button:disabled {
 .form-grid label {
   display: grid;
   gap: 8px;
-  color: #64736c;
+  color: #4e5b75;
   font-size: 13px;
   font-weight: bold;
 }
@@ -308,25 +317,25 @@ button:disabled {
   min-height: 49px;
   padding: 11px 13px;
   color: var(--ink);
-  background: #fffdf8;
-  border: 1px solid #d9cdbb;
+  background: #ffffff;
+  border: 1px solid #c7d3e3;
   border-radius: 9px;
   outline: none;
 }
 .form-grid input:focus,
 .form-grid select:focus {
   border-color: var(--coral);
-  box-shadow: 0 0 0 4px rgba(231, 111, 81, 0.14);
+  box-shadow: 0 0 0 4px rgba(43, 63, 110, 0.14);
 }
 .form-grid input[aria-invalid="true"] {
-  border-color: #c94b45;
+  border-color: #c94a2b;
 }
 .wide-field {
   grid-column: span 2;
 }
 .field-error,
 .field-hint {
-  color: #c94b45;
+  color: #c94a2b;
   font-size: 12px;
 }
 .field-hint {
@@ -343,10 +352,10 @@ button:disabled {
 }
 .secondary-button {
   color: var(--coral);
-  background: #fbe3d9;
+  background: #e1e9f4;
 }
 .secondary-button:hover {
-  background: #f5d0c2;
+  background: #c7d3e3;
 }
 .pages-heading {
   display: flex;
@@ -366,9 +375,9 @@ button:disabled {
   justify-content: center;
   gap: 9px;
   color: var(--coral);
-  border: 2px dashed #e5ae9c;
+  border: 2px dashed #c7d3e3;
   border-radius: 15px;
-  background: #fff8ef;
+  background: #ffffff;
   text-align: center;
 }
 .upload-zone strong {
@@ -383,19 +392,19 @@ button:disabled {
   color: var(--coral);
 }
 .upload-zone small {
-  color: #a9a096;
+  color: #8a96ad;
 }
 .upload-zone.is-active {
-  background: #fbe3d9;
+  background: #e1e9f4;
   border-color: var(--coral);
   transform: scale(1.01);
 }
 .upload-error {
   margin: -12px 0 20px;
   padding: 11px 14px;
-  color: #a3443d;
+  color: #a8341c;
   border-radius: 9px;
-  background: #f9dfdc;
+  background: #fbe5df;
   font-size: 13px;
   font-weight: bold;
 }
@@ -416,13 +425,13 @@ button:disabled {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fffdf8;
-  box-shadow: 0 3px 8px rgba(76, 57, 30, 0.06);
+  background: #ffffff;
+  box-shadow: 0 3px 8px rgba(30, 42, 68, 0.06);
 }
 .page-card.is-dragging {
   opacity: 0.72;
   transform: scale(1.04);
-  box-shadow: 0 15px 30px rgba(76, 57, 30, 0.18);
+  box-shadow: 0 15px 30px rgba(30, 42, 68, 0.18);
 }
 .page-card__top,
 .page-card__bottom {
@@ -452,7 +461,7 @@ button:disabled {
 }
 .icon-button:hover {
   color: var(--coral);
-  background: #fbe3d9;
+  background: #e1e9f4;
 }
 .drag-handle {
   cursor: grab;
@@ -465,7 +474,7 @@ button:disabled {
   padding: 0;
   overflow: hidden;
   border: 0;
-  background: #eee5d6;
+  background: #d5dfeb;
 }
 .page-image img {
   width: 100%;
@@ -480,7 +489,7 @@ button:disabled {
   justify-content: center;
   gap: 7px;
   color: white;
-  background: rgba(41, 59, 59, 0.42);
+  background: rgba(30, 42, 68, 0.42);
   opacity: 0;
   transition: opacity 0.2s;
 }
@@ -500,12 +509,12 @@ button:disabled {
   white-space: nowrap;
 }
 .delete-button:hover {
-  color: #c94b45;
-  background: #f9dfdc;
+  color: #c94a2b;
+  background: #fbe5df;
 }
 .empty-pages {
   padding: 36px 20px 12px;
-  color: #b1a89c;
+  color: #8a96ad;
   text-align: center;
 }
 .empty-pages p {
@@ -523,7 +532,7 @@ button:disabled {
   display: grid;
   place-items: center;
   padding: 30px;
-  background: rgba(41, 59, 59, 0.72);
+  background: rgba(30, 42, 68, 0.72);
 }
 .preview-content {
   position: relative;
@@ -551,8 +560,8 @@ button:disabled {
   padding: 34px;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: rgba(255, 250, 240, 0.94);
-  box-shadow: 0 8px 24px rgba(76, 57, 30, 0.06);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 24px rgba(30, 42, 68, 0.06);
 }
 .preview-heading {
   display: flex;
@@ -563,7 +572,7 @@ button:disabled {
 .preview-heading h2 {
   margin: 9px 0 8px;
   font:
-    32px "Jua",
+    32px "Do Hyeon",
     sans-serif;
 }
 .preview-heading .section-description {
@@ -573,7 +582,7 @@ button:disabled {
   min-width: 72px;
   padding: 11px 13px;
   color: var(--coral);
-  background: #fbe3d9;
+  background: #e1e9f4;
   border-radius: 9px;
   text-align: center;
   font-size: 18px;
@@ -586,7 +595,7 @@ button:disabled {
   padding: 22px;
   border: 1px solid var(--line);
   border-radius: 14px;
-  background: #eee5d6;
+  background: #d5dfeb;
 }
 .preview-page img {
   display: block;
@@ -612,7 +621,7 @@ button:disabled {
 .page-count {
   padding: 9px 12px;
   color: var(--coral);
-  background: #fbe3d9;
+  background: #e1e9f4;
   border-radius: 9px;
   font-weight: bold;
 }
@@ -784,21 +793,21 @@ button:disabled {
   padding: 34px;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: rgba(255, 250, 240, 0.94);
-  box-shadow: 0 8px 24px rgba(76, 57, 30, 0.06);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 24px rgba(30, 42, 68, 0.06);
 }
 .pdf-intro {
   display: flex;
   align-items: center;
   gap: 16px;
   margin: 12px 0 24px;
-  color: #5b9a7c;
+  color: #157f71;
 }
 .pdf-intro h2 {
   margin: 0 0 6px;
   color: var(--ink);
   font:
-    32px "Jua",
+    32px "Do Hyeon",
     sans-serif;
 }
 .pdf-intro p {
@@ -815,11 +824,11 @@ button:disabled {
 }
 .book-summary strong {
   font:
-    26px "Jua",
+    26px "Do Hyeon",
     sans-serif;
 }
 .book-summary span {
-  color: #58766b;
+  color: #4e5b75;
   font-size: 14px;
 }
 .pdf-size-options {
@@ -844,13 +853,13 @@ button:disabled {
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 11px;
-  background: #fffdf8;
+  background: #ffffff;
   cursor: pointer;
 }
 .pdf-size-options label.is-selected {
   border-color: var(--coral);
-  background: #fff1e9;
-  box-shadow: 0 0 0 3px rgba(231, 111, 81, 0.12);
+  background: #e1e9f4;
+  box-shadow: 0 0 0 3px rgba(43, 63, 110, 0.12);
 }
 .pdf-size-options input {
   accent-color: var(--coral);
@@ -865,18 +874,18 @@ button:disabled {
 .pdf-status {
   margin: 22px 0 0;
   padding: 13px 16px;
-  color: #8b6b3f;
+  color: #3d4a66;
   border-radius: 10px;
-  background: #f5e8c8;
+  background: #fdf0cc;
   font-weight: bold;
 }
 .pdf-status.is-complete {
-  color: #397856;
+  color: #157f71;
   background: var(--mint);
 }
 .pdf-status.is-error {
-  color: #a3443d;
-  background: #f9dfdc;
+  color: #a8341c;
+  background: #fbe5df;
 }
 .pdf-create-button {
   min-width: 190px;
@@ -919,23 +928,21 @@ button:disabled {
   margin: 22px auto 0;
   min-height: 50px;
   padding: 13px 20px;
-  color: #397856;
+  color: #157f71;
   background: var(--mint);
-  border: 1px solid #b9dbc8;
+  border: 1px solid #c7d3e3;
   border-radius: 10px;
   font-weight: bold;
 }
 .ebook-entry-button:hover {
-  background: #cde8d8;
+  background: #cfe5e1;
 }
 .ebook-viewer {
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
   color: var(--ink);
-  background: #f7f1e7;
-  background-image: radial-gradient(#eadfce 1px, transparent 1px);
-  background-size: 20px 20px;
+  background: #e7eef6;
 }
 .ebook-viewer.is-fullscreen {
   min-height: 100vh;
@@ -947,7 +954,7 @@ button:disabled {
   align-items: center;
   gap: 20px;
   padding: 12px max(24px, calc((100vw - 1180px) / 2));
-  background: rgba(255, 250, 240, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   border-bottom: 1px solid var(--line);
 }
 .ebook-back,
@@ -967,7 +974,7 @@ button:disabled {
 .ebook-back:hover,
 .ebook-fullscreen:hover {
   color: var(--coral);
-  background: #fbe3d9;
+  background: #e1e9f4;
 }
 .ebook-fullscreen {
   justify-self: end;
@@ -985,7 +992,7 @@ button:disabled {
 }
 .ebook-heading strong {
   font:
-    24px "Jua",
+    24px "Do Hyeon",
     sans-serif;
 }
 .ebook-heading small {
@@ -1003,7 +1010,7 @@ button:disabled {
 .ebook-loading {
   color: var(--muted);
   font:
-    22px "Jua",
+    22px "Do Hyeon",
     sans-serif;
 }
 .ebook-book {
@@ -1015,7 +1022,7 @@ button:disabled {
   min-width: 0;
   min-height: 0;
   transform-style: preserve-3d;
-  filter: drop-shadow(0 16px 18px rgba(76, 57, 30, 0.16));
+  filter: drop-shadow(0 16px 18px rgba(30, 42, 68, 0.16));
 }
 .ebook-under-page,
 .ebook-turning-page {
@@ -1023,7 +1030,7 @@ button:disabled {
   top: 0;
   bottom: 0;
   overflow: hidden;
-  border: 1px solid #e5dccf;
+  border: 1px solid #d5dfeb;
   background: white;
   backface-visibility: hidden;
   transform-style: preserve-3d;
@@ -1056,11 +1063,11 @@ button:disabled {
 }
 .ebook-turning-page.is-turning-next {
   animation: ebook-turn-next 0.65s ease-in-out forwards;
-  box-shadow: 12px 0 18px rgba(76, 57, 30, 0.2);
+  box-shadow: 12px 0 18px rgba(30, 42, 68, 0.2);
 }
 .ebook-turning-page.is-turning-previous {
   animation: ebook-turn-previous 0.65s ease-in-out forwards;
-  box-shadow: -12px 0 18px rgba(76, 57, 30, 0.2);
+  box-shadow: -12px 0 18px rgba(30, 42, 68, 0.2);
 }
 .ebook-page-surface {
   width: 100%;
@@ -1090,14 +1097,14 @@ button:disabled {
   width: 2px;
   background: linear-gradient(
     90deg,
-    rgba(100, 75, 48, 0.06),
-    rgba(100, 75, 48, 0.22),
-    rgba(100, 75, 48, 0.06)
+    rgba(30, 42, 68, 0.06),
+    rgba(30, 42, 68, 0.22),
+    rgba(30, 42, 68, 0.06)
   );
 }
 .ebook-controls {
   padding: 14px max(24px, calc((100vw - 1180px) / 2)) 22px;
-  background: rgba(255, 250, 240, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   border-top: 1px solid var(--line);
 }
 .ebook-navigation {
@@ -1121,15 +1128,15 @@ button:disabled {
   border: 1px solid var(--line);
   border-radius: 10px;
   font-weight: bold;
-  box-shadow: 0 3px 0 #e4d9c8;
+  box-shadow: 0 3px 0 #d5dfeb;
 }
 .ebook-nav-button:hover:not(:disabled) {
   color: var(--coral);
   transform: translateY(-1px);
 }
 .ebook-nav-button:disabled {
-  color: #bdb5ab;
-  background: #eee9e1;
+  color: #a9b4c6;
+  background: #e7eef6;
   box-shadow: none;
 }
 .ebook-thumbnails {
@@ -1166,7 +1173,7 @@ button:disabled {
   width: 42px;
   height: 42px;
   color: var(--ink);
-  background: rgba(255, 250, 240, 0.9);
+  background: rgba(255, 255, 255, 0.9);
   border: 0;
   border-radius: 9px;
 }
@@ -1289,9 +1296,7 @@ button:disabled {
   min-height: 100vh;
   padding: 42px 24px 76px;
   color: var(--ink);
-  background: #f7f1e7;
-  background-image: radial-gradient(#eadfce 1px, transparent 1px);
-  background-size: 20px 20px;
+  background: #e7eef6;
 }
 .admin-header,
 .admin-content {
@@ -1309,7 +1314,7 @@ button:disabled {
 .admin-header h1 {
   margin: 8px 0 5px;
   font:
-    36px "Jua",
+    36px "Do Hyeon",
     sans-serif;
 }
 .admin-header p {
@@ -1334,7 +1339,7 @@ button:disabled {
 .admin-toolbar h2 {
   margin: 0;
   font:
-    25px "Jua",
+    25px "Do Hyeon",
     sans-serif;
 }
 .admin-toolbar span {
@@ -1352,8 +1357,8 @@ button:disabled {
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 16px;
-  background: rgba(255, 250, 240, 0.94);
-  box-shadow: 0 8px 24px rgba(76, 57, 30, 0.06);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 24px rgba(30, 42, 68, 0.06);
 }
 .admin-book-cover {
   width: 150px;
@@ -1361,9 +1366,9 @@ button:disabled {
   display: grid;
   place-items: center;
   overflow: hidden;
-  color: #d49a76;
+  color: #c7d3e3;
   border-radius: 10px;
-  background: #eee5d6;
+  background: #d5dfeb;
 }
 .admin-book-cover img {
   width: 100%;
@@ -1383,7 +1388,7 @@ button:disabled {
   overflow: hidden;
   margin: 2px 0 4px;
   font:
-    23px "Jua",
+    23px "Do Hyeon",
     sans-serif;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1401,12 +1406,12 @@ button:disabled {
   font-weight: bold;
 }
 .publish-badge.is-published {
-  color: #397856;
+  color: #157f71;
   background: var(--mint);
 }
 .publish-badge.is-private {
-  color: #8b765d;
-  background: #eee7dc;
+  color: #4e5b75;
+  background: #e7eef6;
 }
 .admin-book-meta {
   display: grid;
@@ -1414,8 +1419,8 @@ button:disabled {
   gap: 12px;
   margin: 20px 0;
   padding: 14px 0;
-  border-top: 1px solid #eee4d6;
-  border-bottom: 1px solid #eee4d6;
+  border-top: 1px solid #d5dfeb;
+  border-bottom: 1px solid #d5dfeb;
 }
 .admin-book-meta div {
   min-width: 0;
@@ -1453,13 +1458,13 @@ button:disabled {
   min-height: 52px;
   padding: 14px 18px;
   color: white;
-  background: #c94b45;
+  background: #c94a2b;
   border: 0;
   border-radius: 10px;
   font-weight: bold;
 }
 .danger-button:hover {
-  background: #ad3d38;
+  background: #a8341c;
 }
 .admin-login-card {
   width: min(100%, 450px);
@@ -1467,8 +1472,8 @@ button:disabled {
   padding: 36px;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: rgba(255, 250, 240, 0.96);
-  box-shadow: 0 12px 30px rgba(76, 57, 30, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 12px 30px rgba(30, 42, 68, 0.08);
   text-align: center;
 }
 .admin-login-icon,
@@ -1485,7 +1490,7 @@ button:disabled {
 .admin-login-card h1 {
   margin: 10px 0 8px;
   font:
-    28px "Jua",
+    28px "Do Hyeon",
     sans-serif;
 }
 .admin-login-card > p {
@@ -1500,7 +1505,7 @@ button:disabled {
 .admin-login-card label {
   display: grid;
   gap: 7px;
-  color: #64736c;
+  color: #4e5b75;
   font-size: 13px;
   font-weight: bold;
 }
@@ -1508,14 +1513,14 @@ button:disabled {
   min-height: 48px;
   padding: 11px 13px;
   color: var(--ink);
-  background: #fffdf8;
-  border: 1px solid #d9cdbb;
+  background: #ffffff;
+  border: 1px solid #c7d3e3;
   border-radius: 9px;
   outline: none;
 }
 .admin-login-card input:focus {
   border-color: var(--coral);
-  box-shadow: 0 0 0 4px rgba(231, 111, 81, 0.14);
+  box-shadow: 0 0 0 4px rgba(43, 63, 110, 0.14);
 }
 .admin-login-card form .primary-button {
   justify-content: center;
@@ -1525,9 +1530,9 @@ button:disabled {
 .admin-action-error {
   margin: 0;
   padding: 11px 13px;
-  color: #a3443d;
+  color: #a8341c;
   border-radius: 9px;
-  background: #f9dfdc;
+  background: #fbe5df;
   font-size: 13px;
   font-weight: bold;
 }
@@ -1550,7 +1555,7 @@ button:disabled {
 }
 .admin-state h1 {
   font:
-    28px "Jua",
+    28px "Do Hyeon",
     sans-serif;
 }
 .admin-modal-backdrop {
@@ -1560,7 +1565,7 @@ button:disabled {
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(41, 59, 59, 0.58);
+  background: rgba(30, 42, 68, 0.58);
 }
 .admin-modal {
   position: relative;
@@ -1568,7 +1573,7 @@ button:disabled {
   padding: 32px;
   border-radius: 17px;
   background: var(--cream);
-  box-shadow: 0 18px 45px rgba(41, 59, 59, 0.2);
+  box-shadow: 0 18px 45px rgba(30, 42, 68, 0.2);
   text-align: center;
 }
 .admin-modal-close {
@@ -1577,14 +1582,14 @@ button:disabled {
   right: 10px;
 }
 .admin-danger-icon {
-  color: #c94b45;
-  background: #f9dfdc;
+  color: #c94a2b;
+  background: #fbe5df;
   border-radius: 50%;
 }
 .admin-modal h2 {
   margin: 8px 0 12px;
   font:
-    25px "Jua",
+    25px "Do Hyeon",
     sans-serif;
 }
 .admin-modal p {
@@ -1684,24 +1689,24 @@ button:disabled {
   font-weight: bold;
 }
 .save-book-message.is-success {
-  color: #397856;
+  color: #157f71;
   background: var(--mint);
 }
 .save-book-message.is-error {
-  color: #a3443d;
-  background: #f9dfdc;
+  color: #a8341c;
+  background: #fbe5df;
 }
 .share-book-card {
   width: min(100%, 680px);
   padding: 14px;
-  border: 1px solid #b9dbc8;
+  border: 1px solid #c7d3e3;
   border-radius: 12px;
-  background: #f3fbf5;
+  background: #eaf5f3;
 }
 .share-book-card label {
   display: block;
   margin-bottom: 8px;
-  color: #397856;
+  color: #157f71;
   font-size: 13px;
   font-weight: bold;
 }
@@ -1715,7 +1720,7 @@ button:disabled {
   padding: 10px 11px;
   color: var(--ink);
   background: white;
-  border: 1px solid #cfe1d4;
+  border: 1px solid #cfe5e1;
   border-radius: 8px;
   font-size: 12px;
 }
@@ -1730,7 +1735,7 @@ button:disabled {
 }
 .share-book-actions .text-button {
   min-height: 34px;
-  color: #397856;
+  color: #157f71;
   font-size: 13px;
 }
 .shared-book-state {
@@ -1741,13 +1746,13 @@ button:disabled {
   gap: 16px;
   padding: 24px;
   color: var(--ink);
-  background: #f7f1e7;
+  background: #e7eef6;
   text-align: center;
 }
 .shared-book-state h1 {
   margin: 0;
   font:
-    31px "Jua",
+    31px "Do Hyeon",
     sans-serif;
 }
 .shared-book-state p {
@@ -1778,4 +1783,236 @@ button:disabled {
   .ebook-copyright {
     font-size: 11px;
   }
+}
+
+
+/* ---------- 도서관과 맞춘 공통 모양 ---------- */
+.primary-button,
+.secondary-button {
+  min-height: 52px;
+  border-radius: 26px;
+  padding: 0 26px;
+  font-weight: normal;
+  font-size: 18px;
+}
+.primary-button {
+  background: var(--shelf);
+  box-shadow: none;
+}
+.primary-button:hover {
+  background: var(--ink);
+  transform: none;
+}
+.secondary-button {
+  color: var(--shelf);
+  background: transparent;
+  border: 2px solid var(--shelf);
+  box-shadow: none;
+}
+.secondary-button:hover {
+  background: #ffffff;
+  transform: none;
+}
+.app-shell,
+.ebook-viewer {
+  background: var(--wall);
+  word-break: keep-all;
+}
+.section-kicker,
+.eyebrow {
+  letter-spacing: 0;
+  text-transform: none;
+}
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- 첫 화면 책꽂이 (도서관과 같은 모양) ---------- */
+.site-header {
+  background: var(--wall);
+  backdrop-filter: none;
+}
+.brand-mark {
+  background: var(--shelf);
+  border-radius: 10px;
+}
+.eyebrow,
+.section-kicker {
+  color: var(--ink-soft);
+  font-size: 15px;
+  font-weight: normal;
+}
+.header-note {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--shelf);
+  font-size: 16px;
+  font-weight: normal;
+  text-decoration: none;
+}
+.header-note:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.welcome h2 {
+  font-weight: 400;
+  word-break: keep-all;
+}
+.welcome h2 em {
+  color: var(--shelf);
+}
+.welcome-copy > p {
+  color: var(--ink-soft);
+  font-size: 19px;
+}
+.text-button {
+  color: var(--shelf);
+  text-decoration: none;
+}
+.welcome-shelf {
+  align-self: end;
+  padding: 0 24px;
+}
+.welcome-shelf__books {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 6px;
+  min-height: 260px;
+}
+.welcome-spine {
+  display: flex;
+  justify-content: center;
+  padding: 18px 0 12px;
+  border-radius: 4px 4px 0 0;
+  box-shadow: inset -5px 0 0 rgba(0, 0, 0, 0.12);
+}
+.welcome-spine:nth-child(3) {
+  transform: translateY(-18px) rotate(-4deg);
+  transform-origin: bottom left;
+}
+.welcome-spine span {
+  writing-mode: vertical-rl;
+  font: 24px/1 "Do Hyeon", sans-serif;
+  letter-spacing: 2px;
+}
+.welcome-shelf__board {
+  position: relative;
+  height: 22px;
+  background: var(--shelf);
+  border-radius: 3px;
+}
+.welcome-shelf__board::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 22px;
+  height: 14px;
+  background: var(--shelf-shadow);
+}
+@media (max-width: 860px) {
+  .welcome {
+    grid-template-columns: 1fr;
+    padding: 48px 20px;
+    min-height: auto;
+  }
+  .welcome h2 {
+    font-size: 44px;
+  }
+  .welcome-shelf__books {
+    min-height: 200px;
+  }
+  .welcome-spine {
+    transform-origin: bottom left;
+    scale: 0.8;
+  }
+}
+
+/* ---------- 만들기 단계 화면 ---------- */
+.form-card,
+.pages-card,
+.preview-card,
+.pdf-card {
+  box-shadow: none;
+  border-color: var(--line);
+}
+.form-card h2,
+.pages-heading h2,
+.preview-heading h2,
+.pdf-intro h2 {
+  font-weight: 400;
+  word-break: keep-all;
+}
+.section-description {
+  color: var(--ink-soft);
+  font-size: 17px;
+}
+.form-grid label {
+  font-size: 16px;
+  font-weight: normal;
+  color: var(--ink);
+}
+.form-grid input,
+.form-grid select {
+  font-size: 17px;
+  font-weight: normal;
+}
+.step-indicator {
+  justify-content: safe center;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  box-shadow: none;
+  scrollbar-width: thin;
+}
+.step {
+  flex: none;
+  font-size: 15px;
+  font-weight: normal;
+  white-space: nowrap;
+}
+.step.is-current {
+  color: var(--shelf);
+  font-weight: bold;
+}
+@media (max-width: 600px) {
+  .site-header .header-note {
+    display: none;
+  }
+}
+@media (min-width: 761px) {
+  .step-indicator {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    overflow-x: visible;
+  }
+}
+.step-indicator {
+  gap: 4px;
+  padding: 12px 14px;
+}
+.step {
+  gap: 5px;
+}
+.step-arrow {
+  width: 14px;
+  height: 14px;
+  opacity: 0.6;
+}
+.ebook-header {
+  background: var(--wall);
+}
+.ebook-heading strong {
+  font-weight: 400;
 }

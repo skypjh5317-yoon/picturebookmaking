@@ -24,8 +24,8 @@ export default function SharedBookPage({ slug }: { slug: string }) {
   }, [slug])
 
   if (status === 'loading') return <main className="shared-book-state"><p>📖 그림책을 펼치는 중...</p></main>
-  if (status === 'not-found') return <main className="shared-book-state"><h1>📚 그림책을 찾을 수 없습니다.</h1></main>
-  if (status === 'private') return <main className="shared-book-state"><h1>📚 현재 이 그림책은 공개되지 않았습니다.</h1></main>
+  if (status === 'not-found') return <main className="shared-book-state"><h1>그림책을 찾을 수 없습니다.</h1></main>
+  if (status === 'private') return <main className="shared-book-state"><h1>현재 이 그림책은 공개되지 않았습니다.</h1></main>
   if (status === 'no-pages') return <main className="shared-book-state"><h1>이 그림책에 저장된 페이지가 없습니다.</h1></main>
   if (status === 'no-image') return <main className="shared-book-state"><h1>페이지 이미지 주소를 불러오지 못했습니다.</h1></main>
   if (status === 'error' || !book) return <main className="shared-book-state"><h1>그림책을 불러오지 못했습니다.</h1><p>인터넷 연결과 Supabase 설정을 확인해주세요.</p></main>
