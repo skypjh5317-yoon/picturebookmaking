@@ -1,7 +1,7 @@
 // 기본 배경음악: 외부 음원 파일 없이 브라우저(Web Audio)가 직접 연주합니다.
 // 코드로 만든 음악이라 저작권 걱정 없이 마음껏 쓸 수 있어요.
 
-export type MusicPresetId = 'calm-forest' | 'happy-day' | 'mystery-night' | 'warm-heart' | 'adventure'
+export type MusicPresetId = 'calm-forest' | 'happy-day' | 'mystery-night' | 'warm-heart' | 'adventure' | 'rainy-window' | 'farewell' | 'quiet-snow'
 
 type Instrument = 'musicbox' | 'piano' | 'pluck' | 'bell'
 
@@ -10,6 +10,8 @@ export type MusicPreset = {
   emoji: string
   label: string
   description: string
+  // 'sad' 는 슬픈·잔잔한 탭에 따로 보여 줍니다.
+  mood?: 'sad'
   tempo: number
   // 각 코드: 루트 음 + 코드 구성음 (MIDI 번호). 한 코드는 한 마디(4박) 동안 이어집니다.
   chords: number[][]
@@ -57,6 +59,24 @@ export const MUSIC_PRESETS: MusicPreset[] = [
     tempo: 100, chords: [C(45, ...MINOR), C(41, ...MAJOR), C(48, ...MAJOR), C(43, ...MAJOR)],
     scale: [69, 71, 72, 76, 79, 81], lead: 'pluck', arpeggio: true, bass: true, pulse: true,
     melodyDensity: 0.55, padVolume: 0.1, reverb: 0.35,
+  },
+  {
+    id: 'rainy-window', emoji: '🌧️', label: '비 오는 창가', description: '슬프고 쓸쓸한 이야기', mood: 'sad',
+    tempo: 52, chords: [C(45, ...MINOR), C(41, ...MAJOR), C(48, ...MAJOR), C(40, ...MAJOR)],
+    scale: [69, 71, 72, 74, 76, 77, 79], lead: 'piano', arpeggio: false, bass: false, pulse: false,
+    melodyDensity: 0.32, padVolume: 0.14, reverb: 0.65,
+  },
+  {
+    id: 'farewell', emoji: '🍂', label: '안녕, 잘 가', description: '이별, 그리움, 눈물 나는 장면', mood: 'sad',
+    tempo: 48, chords: [C(50, ...MINOR), C(46, ...MAJOR), C(41, ...MAJOR), C(45, ...MAJOR)],
+    scale: [62, 65, 67, 69, 70, 72, 74], lead: 'piano', arpeggio: true, bass: false, pulse: false,
+    melodyDensity: 0.28, padVolume: 0.13, reverb: 0.6,
+  },
+  {
+    id: 'quiet-snow', emoji: '❄️', label: '고요한 눈', description: '아주 조용하고 잔잔한 장면', mood: 'sad',
+    tempo: 44, chords: [C(40, ...MINOR), C(48, ...MAJOR), C(43, ...MAJOR), C(50, ...MAJOR)],
+    scale: [76, 79, 81, 83, 86, 88], lead: 'musicbox', arpeggio: false, bass: false, pulse: false,
+    melodyDensity: 0.22, padVolume: 0.17, reverb: 0.8,
   },
 ]
 
