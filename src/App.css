@@ -2148,3 +2148,24 @@ button:disabled {
     animation: none;
   }
 }
+.admin-music-modal {
+  width: min(100%, 720px);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+.admin-music-modal .music-picker {
+  margin-top: 12px;
+  text-align: left;
+}
+.admin-music-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  color: var(--coral);
+  background: var(--mint);
+  border-radius: 50%;
+}
+.admin-music-preview {
+  margin: 12px auto 0;
+}

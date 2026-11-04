@@ -1,5 +1,7 @@
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import { MUSIC_BUCKET, uploadMusic } from './bookService'
+import type { BookMusic } from '../music/useBookMusic'
 
 export type AdminBook = {
   id: string
@@ -13,6 +15,10 @@ export type AdminBook = {
   cover_image_url: string | null
   is_published: boolean
   created_at: string
+  music_preset?: string | null
+  music_url?: string | null
+  music_path?: string | null
+  music_name?: string | null
 }
 
 export const adminEmail = (import.meta.env.VITE_ADMIN_EMAIL ?? '').trim().toLowerCase()
@@ -97,6 +103,27 @@ export async function updateBookPublication(bookId: string, isPublished: boolean
   if (error) {
     logSupabaseError('Book publication update failed', error)
     throw new Error('BOOK_UPDATE_FAILED')
+  }
+}
+
+export async function updateBookMusic(book: AdminBook, music: BookMusic) {
+  await requireAdminUser()
+  const client = requireClient()
+  // 바꾸지 않은 '내 음악'은 그대로 두고, 새로 고른 음악만 저장소에 올립니다.
+  const keepCurrentFile = music.type === 'custom' && !music.file && music.url === book.music_url
+  const musicFields = keepCurrentFile
+    ? { music_preset: null, music_url: book.music_url ?? null, music_path: book.music_path ?? null, music_name: book.music_name ?? null }
+    : await uploadMusic(client, music)
+  const { data, error } = await client.from('books').update({ ...musicFields, updated_at: new Date().toISOString() }).eq('id', book.id).select('id')
+  if (error || !data?.length) {
+    logSupabaseError('Book music update failed', error)
+    if (musicFields.music_path && musicFields.music_path !== book.music_path) await client.storage.from(MUSIC_BUCKET).remove([musicFields.music_path])
+    throw new Error('MUSIC_UPDATE_FAILED')
+  }
+  // 예전에 올렸던 음악 파일은 더 이상 쓰지 않으니 정리합니다(실패해도 음악 변경은 완료).
+  if (book.music_path && book.music_path !== musicFields.music_path) {
+    const { error: removeError } = await client.storage.from(MUSIC_BUCKET).remove([book.music_path])
+    if (removeError) console.warn('Old music file cleanup failed', removeError)
   }
 }
 

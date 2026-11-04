@@ -8,7 +8,7 @@ export type SaveBookPage = { file: File; fileName: string }
 export type SharedBookPage = { id: string; pageNumber: number; image_url: string; previewUrl: string; fileName: string; file: File | null }
 export type SharedBook = { id: string; title: string; author: string; grade: string; className: string; school: string; year: string; isPublished: boolean; pages: SharedBookPage[]; music: BookMusic }
 
-const MUSIC_BUCKET = 'book-music'
+export const MUSIC_BUCKET = 'book-music'
 
 function musicExtension(file: File) {
   const fromName = file.name.split('.').pop()?.toLowerCase()
@@ -21,7 +21,7 @@ function musicContentType(file: File) {
   return extension === 'm4a' ? 'audio/mp4' : extension === 'ogg' ? 'audio/ogg' : extension === 'wav' ? 'audio/wav' : 'audio/mpeg'
 }
 
-async function uploadMusic(client: NonNullable<typeof supabase>, music: BookMusic) {
+export async function uploadMusic(client: NonNullable<typeof supabase>, music: BookMusic) {
   if (music.type === 'preset') return { music_preset: music.presetId, music_url: null, music_path: null, music_name: null }
   if (music.type !== 'custom' || !music.file) return { music_preset: null, music_url: null, music_path: null, music_name: null }
   if (validateMusicFile(music.file)) throw new Error('MUSIC_UPLOAD_FAILED')
@@ -32,7 +32,7 @@ async function uploadMusic(client: NonNullable<typeof supabase>, music: BookMusi
   return { music_preset: null, music_url: data.publicUrl, music_path: path, music_name: music.name }
 }
 
-function toBookMusic(row: { music_preset?: string | null; music_url?: string | null; music_name?: string | null }): BookMusic {
+export function toBookMusic(row: { music_preset?: string | null; music_url?: string | null; music_name?: string | null }): BookMusic {
   const preset = findPreset(row.music_preset)
   if (preset) return { type: 'preset', presetId: preset.id }
   if (row.music_url) return { type: 'custom', url: row.music_url, name: row.music_name || '배경음악', file: null }

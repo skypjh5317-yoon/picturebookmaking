@@ -3,6 +3,7 @@ import type { User } from '@supabase/supabase-js'
 import AdminBookList from '../components/AdminBookList'
 import AdminLogin from '../components/AdminLogin'
 import DeleteBookModal from '../components/DeleteBookModal'
+import EditMusicModal from '../components/EditMusicModal'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { deleteBook, getAdminBooks, isAdminUser, signOutAdmin, updateBookPublication, type AdminBook } from '../services/adminService'
 
@@ -15,6 +16,7 @@ export default function AdminPage() {
   const [actionError, setActionError] = useState('')
   const [selectedBook, setSelectedBook] = useState<AdminBook | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [musicBook, setMusicBook] = useState<AdminBook | null>(null)
 
   const loadBooks = async () => {
     setIsLoading(true)
@@ -88,5 +90,5 @@ export default function AdminPage() {
   if (isCheckingSession) return <main className="admin-shell"><p className="admin-loading">관리자 세션을 확인하는 중...</p></main>
   if (!user) return <AdminLogin />
 
-  return <main className="admin-shell"><header className="admin-header"><div><span className="eyebrow">동강초 그림책 도서관</span><h1>그림책 관리</h1><p>그림책을 관리합니다.</p></div><button className="secondary-button" onClick={handleLogout}>로그아웃</button></header><section className="admin-content"><div className="admin-toolbar"><div><h2>저장된 그림책</h2><span>{books.length}권</span></div><button className="secondary-button" onClick={() => void loadBooks()} disabled={isLoading}><span aria-hidden="true">↻</span> 새로고침</button></div>{actionError && <p className="admin-action-error" role="alert">{actionError}</p>}{error && <p className="admin-action-error" role="alert">{error}</p>}<AdminBookList books={books} isLoading={isLoading} onRefresh={() => void loadBooks()} onTogglePublication={(book) => void handleTogglePublication(book)} onDelete={setSelectedBook} /></section>{selectedBook && <DeleteBookModal title={selectedBook.title} isDeleting={isDeleting} onCancel={() => setSelectedBook(null)} onConfirm={() => void handleDelete()} />}</main>
+  return <main className="admin-shell"><header className="admin-header"><div><span className="eyebrow">동강초 그림책 도서관</span><h1>그림책 관리</h1><p>그림책을 관리합니다.</p></div><button className="secondary-button" onClick={handleLogout}>로그아웃</button></header><section className="admin-content"><div className="admin-toolbar"><div><h2>저장된 그림책</h2><span>{books.length}권</span></div><button className="secondary-button" onClick={() => void loadBooks()} disabled={isLoading}><span aria-hidden="true">↻</span> 새로고침</button></div>{actionError && <p className="admin-action-error" role="alert">{actionError}</p>}{error && <p className="admin-action-error" role="alert">{error}</p>}<AdminBookList books={books} isLoading={isLoading} onRefresh={() => void loadBooks()} onTogglePublication={(book) => void handleTogglePublication(book)} onDelete={setSelectedBook} onEditMusic={setMusicBook} /></section>{selectedBook && <DeleteBookModal title={selectedBook.title} isDeleting={isDeleting} onCancel={() => setSelectedBook(null)} onConfirm={() => void handleDelete()} />}{musicBook && <EditMusicModal book={musicBook} onClose={() => setMusicBook(null)} onSaved={() => { setMusicBook(null); void loadBooks() }} />}</main>
 }
