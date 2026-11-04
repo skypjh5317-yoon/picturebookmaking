@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase'
 import { validateImageFile } from '../utils/fileValidation'
 import { findPreset } from '../music/presets'
+import { findTrack } from '../music/library'
 import { NO_MUSIC, validateMusicFile, type BookMusic } from '../music/useBookMusic'
 
 export type SaveBookInfo = { title: string; author: string; grade: string; className: string; school: string; year: string }
@@ -22,6 +23,7 @@ function musicContentType(file: File) {
 }
 
 export async function uploadMusic(client: NonNullable<typeof supabase>, music: BookMusic) {
+  if (music.type === 'track') return { music_preset: music.trackId, music_url: null, music_path: null, music_name: null }
   if (music.type === 'preset') return { music_preset: music.presetId, music_url: null, music_path: null, music_name: null }
   if (music.type !== 'custom' || !music.file) return { music_preset: null, music_url: null, music_path: null, music_name: null }
   if (validateMusicFile(music.file)) throw new Error('MUSIC_UPLOAD_FAILED')
@@ -35,6 +37,8 @@ export async function uploadMusic(client: NonNullable<typeof supabase>, music: B
 export function toBookMusic(row: { music_preset?: string | null; music_url?: string | null; music_name?: string | null }): BookMusic {
   const preset = findPreset(row.music_preset)
   if (preset) return { type: 'preset', presetId: preset.id }
+  const track = findTrack(row.music_preset)
+  if (track) return { type: 'track', trackId: track.id }
   if (row.music_url) return { type: 'custom', url: row.music_url, name: row.music_name || '배경음악', file: null }
   return NO_MUSIC
 }

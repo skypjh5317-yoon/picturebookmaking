@@ -1,13 +1,9 @@
 import { BookOpen, ExternalLink, Eye, EyeOff, Music, RefreshCw, Trash2 } from 'lucide-react'
 import type { AdminBook } from '../services/adminService'
-import { findPreset } from '../music/presets'
+import { toBookMusic } from '../services/bookService'
+import { describeMusic } from '../music/useBookMusic'
 
-function musicLabel(book: AdminBook) {
-  const preset = findPreset(book.music_preset)
-  if (preset) return `${preset.emoji} ${preset.label}`
-  if (book.music_url) return `📁 ${book.music_name || '내 음악'}`
-  return '없음'
-}
+const musicLabel = (book: AdminBook) => describeMusic(toBookMusic(book))
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium' }).format(new Date(value))

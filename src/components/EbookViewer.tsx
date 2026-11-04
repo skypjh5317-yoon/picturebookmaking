@@ -2,8 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { ArrowLeft, Maximize, Minimize, Music, VolumeX, X } from 'lucide-react'
 import SaveBookButton from './SaveBookButton'
 import MusicPicker from './MusicPicker'
-import { findPreset } from '../music/presets'
-import { NO_MUSIC, useBookMusic, type BookMusic } from '../music/useBookMusic'
+import { NO_MUSIC, describeMusic, useBookMusic, type BookMusic } from '../music/useBookMusic'
 
 export type EbookPage = { id: string; file: File | null; previewUrl: string; fileName: string }
 export type EbookBook = { title: string; author: string; grade: string; className: string; school: string; year: string }
@@ -31,7 +30,7 @@ export default function EbookViewer({ book, pages, onBack, readOnly = false, mus
   const [isSaved, setIsSaved] = useState(false)
   const player = useBookMusic(music)
   const userPausedRef = useRef(false)
-  const musicLabel = music.type === 'preset' ? findPreset(music.presetId)?.label ?? '배경음악' : music.type === 'custom' ? music.name : ''
+  const musicLabel = describeMusic(music)
   const toggleMusic = () => { userPausedRef.current = player.isPlaying; player.toggle() }
   // 공유된 책은 처음 화면을 누르거나 책장을 넘길 때 음악이 자동으로 시작됩니다(브라우저 자동재생 정책).
   const startMusicOnFirstTouch = (event: React.PointerEvent) => {
@@ -181,7 +180,7 @@ export default function EbookViewer({ book, pages, onBack, readOnly = false, mus
         <div className={`ebook-turning-page ${isTurning ? `is-turning-${turnDirection}` : ''}`}><EbookPageImage page={currentPage} /></div>
       </div>}
     </section>
-    <footer className="ebook-controls"><div className="ebook-navigation"><button className="ebook-nav-button" onClick={() => goTo(currentIndex - 1, 'previous')} disabled={currentIndex === 0 || isTurning} aria-label="이전 페이지">‹ 이전</button><strong>{pageLabel}</strong><button className="ebook-nav-button" onClick={() => goTo(currentIndex + 1, 'next')} disabled={currentIndex === pages.length - 1 || isTurning} aria-label="다음 페이지">다음 ›</button></div><div className="ebook-thumbnails" aria-label="페이지 선택">{pages.map((page, index) => <button key={page.id} className={index === currentIndex ? 'is-current' : ''} onClick={() => goTo(index, index > currentIndex ? 'next' : 'previous')} aria-label={`${index + 1}페이지`} title={`${index + 1}페이지`}><span>{index + 1}</span></button>)}</div>{!readOnly && onMusicChange && !isFullscreen && <MusicPicker music={music} onChange={onMusicChange} onPicked={(next) => { userPausedRef.current = false; void player.play(next) }} disabled={isSaved} />}{!readOnly && pages.length > 0 && pages.every((page) => page.file instanceof File) && <SaveBookButton book={book} pages={pages.map((page) => ({ file: page.file as File, fileName: page.fileName }))} music={music} onSaved={() => setIsSaved(true)} />}{readOnly && <div className="ebook-copyright"><p>ⓒ 작가 {book.author || '미상'} · 무단 복제·배포 금지</p><p>이 도서관의 그림책은 동강초등학교 학생 작가들의 창작물로, 저작권은 각 작가에게 있습니다. 개인 감상 외에 글과 그림을 복제·배포·수정하거나 다른 곳에 게시할 수 없습니다.</p></div>}</footer>
+    <footer className="ebook-controls"><div className="ebook-navigation"><button className="ebook-nav-button" onClick={() => goTo(currentIndex - 1, 'previous')} disabled={currentIndex === 0 || isTurning} aria-label="이전 페이지">‹ 이전</button><strong>{pageLabel}</strong><button className="ebook-nav-button" onClick={() => goTo(currentIndex + 1, 'next')} disabled={currentIndex === pages.length - 1 || isTurning} aria-label="다음 페이지">다음 ›</button></div>{player.isPlaying && music.type === 'track' && <p className="ebook-music-credit">배경음악 {musicLabel} (YouTube 오디오 보관함)</p>}<div className="ebook-thumbnails" aria-label="페이지 선택">{pages.map((page, index) => <button key={page.id} className={index === currentIndex ? 'is-current' : ''} onClick={() => goTo(index, index > currentIndex ? 'next' : 'previous')} aria-label={`${index + 1}페이지`} title={`${index + 1}페이지`}><span>{index + 1}</span></button>)}</div>{!readOnly && onMusicChange && !isFullscreen && <MusicPicker music={music} onChange={onMusicChange} onPicked={(next) => { userPausedRef.current = false; void player.play(next) }} disabled={isSaved} />}{!readOnly && pages.length > 0 && pages.every((page) => page.file instanceof File) && <SaveBookButton book={book} pages={pages.map((page) => ({ file: page.file as File, fileName: page.fileName }))} music={music} onSaved={() => setIsSaved(true)} />}{readOnly && <div className="ebook-copyright"><p>ⓒ 작가 {book.author || '미상'} · 무단 복제·배포 금지</p><p>이 도서관의 그림책은 동강초등학교 학생 작가들의 창작물로, 저작권은 각 작가에게 있습니다. 개인 감상 외에 글과 그림을 복제·배포·수정하거나 다른 곳에 게시할 수 없습니다.</p></div>}</footer>
     {isFullscreen && <button className="ebook-exit" onClick={toggleFullscreen} aria-label="전체화면 닫기"><X size={22} /></button>}
   </main>
 }

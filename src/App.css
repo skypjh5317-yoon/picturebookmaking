@@ -2169,3 +2169,52 @@ button:disabled {
 .admin-music-preview {
   margin: 12px auto 0;
 }
+.music-picker__none {
+  margin-left: auto;
+  padding: 6px 11px;
+  color: var(--muted);
+  background: #f5f8fc;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.music-picker__none.is-selected {
+  color: var(--coral);
+  border-color: var(--coral);
+}
+.music-picker__tabs {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.music-picker__tabs button {
+  flex: none;
+  padding: 7px 12px;
+  color: var(--ink);
+  background: #f5f8fc;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.music-picker__tabs button.is-active {
+  color: white;
+  background: var(--coral);
+  border-color: var(--coral);
+}
+.music-picker__hint {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.ebook-music-credit {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}

@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { GenerativeMusic, type MusicPresetId } from './presets'
+import { GenerativeMusic, findPreset, type MusicPresetId } from './presets'
+import { findTrack, trackUrl } from './library'
 
 export type BookMusic =
   | { type: 'none' }
   | { type: 'preset'; presetId: MusicPresetId }
+  | { type: 'track'; trackId: string }
   | { type: 'custom'; url: string; name: string; file: File | null }
 
 export const NO_MUSIC: BookMusic = { type: 'none' }
@@ -18,7 +20,14 @@ export function validateMusicFile(file: File): string | null {
   return null
 }
 
-const musicKey = (music: BookMusic) => music.type === 'preset' ? `preset:${music.presetId}` : music.type === 'custom' ? `custom:${music.url}` : 'none'
+const musicKey = (music: BookMusic) => music.type === 'preset' ? `preset:${music.presetId}` : music.type === 'track' ? `track:${music.trackId}` : music.type === 'custom' ? `custom:${music.url}` : 'none'
+
+export function describeMusic(music: BookMusic) {
+  if (music.type === 'preset') { const preset = findPreset(music.presetId); return preset ? `${preset.emoji} ${preset.label}` : '배경음악' }
+  if (music.type === 'track') { const track = findTrack(music.trackId); return track ? `♪ ${track.title} - ${track.artist}` : '배경음악' }
+  if (music.type === 'custom') return `📁 ${music.name}`
+  return '없음'
+}
 
 export function useBookMusic(music: BookMusic) {
   const generatorRef = useRef<GenerativeMusic | null>(null)
@@ -46,8 +55,9 @@ export function useBookMusic(music: BookMusic) {
         generatorRef.current.setVolume(volumeRef.current)
         await generatorRef.current.start(current.presetId)
         setIsPlaying(true)
-      } else if (current.type === 'custom') {
-        const audio = new Audio(current.url)
+      } else if (current.type === 'custom' || current.type === 'track') {
+        const track = current.type === 'track' ? findTrack(current.trackId) : null
+        const audio = new Audio(current.type === 'custom' ? current.url : track ? trackUrl(track) : '')
         audio.loop = true
         audio.volume = volumeRef.current
         audioRef.current = audio
