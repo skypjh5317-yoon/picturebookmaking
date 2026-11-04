@@ -7,6 +7,7 @@ import { BookOpen, CheckCircle2, ChevronLeft, ChevronRight, FileImage, FileText,
 import EbookViewer from './components/EbookViewer'
 import SharedBookPage from './pages/SharedBookPage'
 import AdminPage from './pages/AdminPage'
+import { NO_MUSIC, type BookMusic } from './music/useBookMusic'
 import { MAX_PAGES, MAX_PAGES_ERROR, validateImageFile } from './utils/fileValidation'
 
 type Page = { id: string; file: File; previewUrl: string; fileName: string }
@@ -197,6 +198,7 @@ function App() {
   const [book, setBook] = useState(initialBook)
   const [pages, setPages] = useState<Page[]>([])
   const [preview, setPreview] = useState<Page | null>(null)
+  const [music, setMusic] = useState<BookMusic>(NO_MUSIC)
   const sharedBookSlug = window.location.pathname.match(/^\/book\/([^/]+)$/)?.[1]
   const isAdminRoute = window.location.pathname === '/admin' || window.location.pathname === '/admin/'
   const pagesRef = useRef<Page[]>([])
@@ -224,7 +226,7 @@ function App() {
   if (sharedBookSlug) return <SharedBookPage slug={decodeURIComponent(sharedBookSlug)} />
   if (isAdminRoute) return <AdminPage />
   if (!isCreating) return <main className="app-shell"><Header /><section className="welcome"><div className="welcome-copy"><span className="eyebrow">동강초 그림책 도서관</span><h2>우리의 이야기가<br /><em>한 권의 책</em>이 됩니다.</h2><p>학생들이 만든 그림과 이야기를 모아<br />쉽고 재미있게 그림책을 만들어보세요.</p><div className="welcome-actions"><button className="primary-button" onClick={startCreating}><BookOpen size={21} /> 새 그림책 만들기</button><a className="text-button" href="https://donggang-picturebook-library.vercel.app"><BookOpen size={19} /> 그림책 도서관 가기</a></div></div><div className="welcome-shelf" aria-hidden="true"><div className="welcome-shelf__books">{welcomeSpines.map((spine) => <span key={spine.label} className="welcome-spine" style={{ background: spine.color, color: spine.ink, height: spine.height, width: spine.width }}><span>{spine.label}</span></span>)}</div><div className="welcome-shelf__board" /></div></section></main>
-  return <main className="app-shell">{step === 6 ? <EbookViewer book={book} pages={pages} onBack={() => setStep(5)} /> : <><Header editing onHome={() => setIsCreating(false)} /><div className="editor-layout"><StepIndicator current={step} />{step === 1 ? <BookInfoForm book={book} onChange={updateBook} onNext={() => setStep(2)} onHome={() => setIsCreating(false)} /> : step === 2 ? <PageUploader pages={pages} onAdd={addFiles} onDelete={removePage} onReorder={handleReorder} onPreview={setPreview} onBack={() => setStep(1)} onNext={() => setStep(3)} /> : step === 3 ? <PageOrganizer pages={pages} onDelete={removePage} onReorder={handleReorder} onPreview={setPreview} onBack={() => setStep(2)} onNext={() => setStep(4)} /> : step === 4 ? <PagePreview pages={pages} onBack={() => setStep(3)} onPdf={() => setStep(5)} /> : <PdfMaker book={book} pages={pages} onBack={() => setStep(4)} onEbook={() => setStep(6)} />}</div>{preview && <div className="preview-modal" role="dialog" aria-modal="true" aria-label="페이지 미리보기" onClick={() => setPreview(null)}><div className="preview-content" onClick={(event) => event.stopPropagation()}><button className="icon-button close-button" onClick={() => setPreview(null)} aria-label="미리보기 닫기"><X size={24} /></button><img src={preview.previewUrl} alt={preview.fileName} /></div></div>}</>}</main>
+  return <main className="app-shell">{step === 6 ? <EbookViewer book={book} pages={pages} onBack={() => setStep(5)} music={music} onMusicChange={setMusic} /> : <><Header editing onHome={() => setIsCreating(false)} /><div className="editor-layout"><StepIndicator current={step} />{step === 1 ? <BookInfoForm book={book} onChange={updateBook} onNext={() => setStep(2)} onHome={() => setIsCreating(false)} /> : step === 2 ? <PageUploader pages={pages} onAdd={addFiles} onDelete={removePage} onReorder={handleReorder} onPreview={setPreview} onBack={() => setStep(1)} onNext={() => setStep(3)} /> : step === 3 ? <PageOrganizer pages={pages} onDelete={removePage} onReorder={handleReorder} onPreview={setPreview} onBack={() => setStep(2)} onNext={() => setStep(4)} /> : step === 4 ? <PagePreview pages={pages} onBack={() => setStep(3)} onPdf={() => setStep(5)} /> : <PdfMaker book={book} pages={pages} onBack={() => setStep(4)} onEbook={() => setStep(6)} />}</div>{preview && <div className="preview-modal" role="dialog" aria-modal="true" aria-label="페이지 미리보기" onClick={() => setPreview(null)}><div className="preview-content" onClick={(event) => event.stopPropagation()}><button className="icon-button close-button" onClick={() => setPreview(null)} aria-label="미리보기 닫기"><X size={24} /></button><img src={preview.previewUrl} alt={preview.fileName} /></div></div>}</>}</main>
 }
 
 export default App

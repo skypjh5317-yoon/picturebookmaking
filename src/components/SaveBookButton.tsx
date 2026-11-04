@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { Copy, ExternalLink, Save } from 'lucide-react'
 import { isSupabaseConfigured } from '../lib/supabase'
 import { saveBook, type SaveBookInfo, type SaveBookPage } from '../services/bookService'
+import { NO_MUSIC, type BookMusic } from '../music/useBookMusic'
 
-export default function SaveBookButton({ book, pages, onSaved }: { book: SaveBookInfo; pages: SaveBookPage[]; onSaved?: (bookId: string) => void }) {
+export default function SaveBookButton({ book, pages, onSaved, music = NO_MUSIC }: { book: SaveBookInfo; pages: SaveBookPage[]; onSaved?: (bookId: string) => void; music?: BookMusic }) {
   const [isSaving, setIsSaving] = useState(false)
   const [progress, setProgress] = useState({ current: 0, total: pages.length })
   const [shareUrl, setShareUrl] = useState('')
@@ -15,12 +16,12 @@ export default function SaveBookButton({ book, pages, onSaved }: { book: SaveBoo
     if (!isSupabaseConfigured) { setMessage('Supabase 환경변수를 설정해주세요.'); return }
     setIsSaving(true); setMessage(''); setCopied(false); setProgress({ current: 0, total: pages.length })
     try {
-      const savedBook = await saveBook(book, pages, (current, total) => setProgress({ current, total }))
+      const savedBook = await saveBook(book, pages, (current, total) => setProgress({ current, total }), music)
       const url = `${window.location.origin}/book/${savedBook.slug}`
       setShareUrl(url); setSavedBookId(savedBook.slug); setMessage('그림책이 저장되었습니다.'); onSaved?.(savedBook.slug)
     } catch (error) {
       const code = error instanceof Error ? error.message : ''
-      setMessage(code === 'PAGE_UPLOAD_FAILED' ? '페이지 이미지 저장에 실패했습니다.' : code === 'BOOK_SAVE_FAILED' ? '그림책 저장에 실패했습니다.' : '인터넷 연결을 확인해주세요.')
+      setMessage(code === 'MUSIC_UPLOAD_FAILED' ? '배경음악 파일 저장에 실패했습니다. 다른 음악을 골라 주세요.' : code === 'PAGE_UPLOAD_FAILED' ? '페이지 이미지 저장에 실패했습니다.' : code === 'BOOK_SAVE_FAILED' ? '그림책 저장에 실패했습니다.' : '인터넷 연결을 확인해주세요.')
     } finally { setIsSaving(false) }
   }
 

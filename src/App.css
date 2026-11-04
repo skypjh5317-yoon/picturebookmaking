@@ -2016,3 +2016,135 @@ button:disabled {
 .ebook-heading strong {
   font-weight: 400;
 }
+
+/* ===== 배경음악 ===== */
+.ebook-header-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-self: end;
+  gap: 6px;
+}
+.ebook-music {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px;
+  border-radius: 12px;
+}
+.ebook-music.is-playing {
+  background: #e1e9f4;
+}
+.ebook-music__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 10px 13px;
+  color: var(--coral);
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.ebook-music.is-playing .ebook-music__toggle svg {
+  animation: music-bounce 1.2s ease-in-out infinite;
+}
+.ebook-music__volume {
+  width: 90px;
+  accent-color: var(--coral);
+}
+@keyframes music-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.music-picker {
+  width: min(100%, 980px);
+  margin: 16px auto 0;
+  padding: 14px 16px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+.music-picker__title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--coral);
+}
+.music-picker__title span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.music-picker__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.music-picker__options button {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-height: 74px;
+  padding: 9px 8px;
+  color: var(--ink);
+  background: #f5f8fc;
+  border: 2px solid transparent;
+  border-radius: 11px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+.music-picker__options button > span {
+  font-size: 20px;
+  line-height: 1.1;
+}
+.music-picker__options button small {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.music-picker__options button:hover:not(:disabled) {
+  background: #e1e9f4;
+}
+.music-picker__options button.is-selected {
+  background: #e1e9f4;
+  border-color: var(--coral);
+}
+.music-picker__options button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.music-picker__note {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .ebook-music__toggle {
+    min-height: 42px;
+    padding: 9px;
+    font-size: 0;
+  }
+  .ebook-music__toggle svg {
+    width: 23px;
+    height: 23px;
+  }
+  .ebook-music__volume {
+    display: none;
+  }
+  .ebook-header-actions {
+    gap: 2px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ebook-music.is-playing .ebook-music__toggle svg {
+    animation: none;
+  }
+}
